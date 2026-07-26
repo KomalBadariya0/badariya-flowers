@@ -33,13 +33,12 @@
 
 /* ============ FORM SHELL (add/edit pages, not modals) ============ */
 .prod-form-shell{
-  display:grid; grid-template-columns:1fr; gap:20px;
+  display:grid; grid-template-columns:minmax(0,1fr); gap:20px;
   align-items:start;
 }
 @media (min-width:1024px){
-  .prod-form-shell{ grid-template-columns:1.6fr 1fr; }
+  .prod-form-shell{ grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); }
 }
-
 /* ============ TABS ============ */
 .prod-tabs{
   display:flex; gap:4px; overflow-x:auto;
@@ -220,4 +219,9 @@
   body[data-admin-page="products"] .cat-toolbar{ flex-direction:column; align-items:stretch; }
   body[data-admin-page="products"] .cat-filter-select{ width:100%; }
   body[data-admin-page="products"] #productFilters{ display:flex !important; flex-direction:column; gap:10px; width:100%; }
+}
+@media (max-width:480px){
+  .prod-list-row{ flex-wrap:wrap; }
+  .prod-list-row input{ flex:1 1 100%; min-width:0; }
+  .prod-list-remove-btn{ margin-left:auto; }
 }
