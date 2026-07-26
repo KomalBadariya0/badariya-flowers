@@ -11,9 +11,16 @@
    change ONLY the line below.
    ========================================================================== */
 
-const API_BASE = "http://127.0.0.1:8000/api";
-const API_ORIGIN = API_BASE.replace(/\/api\/?$/, "");
+// const API_BASE = "https://badariya-flowers.onrender.com/api";
+// const API_ORIGIN = API_BASE.replace(/\/api\/?$/, "");
 
+const API_BASE =
+  window.location.hostname === "127.0.0.1" ||
+  window.location.hostname === "localhost"
+    ? "http://127.0.0.1:8000/api"
+    : "https://badariya-flowers.onrender.com/api";
+
+const API_ORIGIN = API_BASE.replace(/\/api\/?$/, "");
 /** Resolves a relative "/uploads/…" URL from the backend into an absolute one. */
 function mediaUrl(path) {
   if (!path) return path;

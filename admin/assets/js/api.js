@@ -11,9 +11,18 @@
    change.
    ========================================================================== */
 
-const API_BASE = "http://127.0.0.1:8000/api";
+// const API_BASE = "http://127.0.0.1:8000/api";
+
 // Origin (no /api, no trailing slash) — used to resolve relative
 // "/uploads/…" URLs returned by the backend into absolute <img>/<a> URLs.
+// const API_ORIGIN = API_BASE.replace(/\/api\/?$/, "");
+
+const API_BASE =
+  window.location.hostname === "127.0.0.1" ||
+  window.location.hostname === "localhost"
+    ? "http://127.0.0.1:8000/api"
+    : "https://badariya-flowers.onrender.com/api";
+
 const API_ORIGIN = API_BASE.replace(/\/api\/?$/, "");
 
 /**
