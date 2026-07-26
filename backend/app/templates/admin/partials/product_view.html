@@ -1,0 +1,42 @@
+{% set cover = product.images[0] if product.images else "" %}
+<div class="cat-view-head">
+  <img src="{{ cover }}" alt="{{ product.name }}">
+  <div>
+    <h4>{{ product.name }}</h4>
+    <span class="cat-slug-pill">{{ product.sku or "—" }}</span>
+  </div>
+</div>
+<div class="cat-view-grid">
+  <div class="cat-view-field">
+    <span>Category</span>
+    <strong>{{ parent_category.name if parent_category else "—" }}</strong>
+  </div>
+  <div class="cat-view-field">
+    <span>Sub Category</span>
+    <strong>{{ sub_category_name or "—" }}</strong>
+  </div>
+  <div class="cat-view-field">
+    <span>Price</span>
+    <strong>{{ product.priceLabel }}</strong>
+  </div>
+  <div class="cat-view-field">
+    <span>MOQ</span>
+    <strong>{{ product.moq }}</strong>
+  </div>
+  <div class="cat-view-field">
+    <span>Status</span>
+    <strong>{{ 'Active' if product.active else 'Inactive' }}</strong>
+  </div>
+  <div class="cat-view-field">
+    <span>Featured</span>
+    <strong>{{ 'Yes' if product.featured else 'No' }}</strong>
+  </div>
+  <div class="cat-view-field">
+    <span>Created</span>
+    <strong>{{ product.createdAt.strftime('%d %b %Y') if product.createdAt else '—' }}</strong>
+  </div>
+</div>
+<div class="cat-modal-foot cat-modal-foot--center">
+  <a class="btn btn-primary btn-sm" href="/admin/products/{{ product.id }}/edit">Edit Product</a>
+  <button type="button" class="btn btn-outline btn-sm" data-close-modal>Close</button>
+</div>

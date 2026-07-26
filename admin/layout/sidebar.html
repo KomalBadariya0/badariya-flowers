@@ -1,0 +1,67 @@
+<!--
+  BADARIYA FLOWERS — ADMIN SIDEBAR (reference partial)
+
+  This file is NOT loaded directly by any page today. The live admin pages
+  render this exact markup at runtime via admin.js -> renderShell(), so the
+  sidebar/topbar only has to be maintained in ONE place (admin.js).
+
+  This partial is kept as:
+   • a readable reference for what gets injected
+   • the starting point for a real server-side include once the FastAPI
+     backend lands (e.g. a Jinja2 {% include "layout/sidebar.html" %})
+
+  To add a new nav item later, edit the NAV_ITEMS / NAV_BOTTOM arrays at the
+  top of admin/assets/js/admin.js — this file should be kept in sync by hand
+  until it becomes a real Jinja include.
+-->
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="admin-sidebar-glow"></div>
+
+  <a href="/admin/dashboard.html" class="admin-brand">
+    <img src="../assets/images/logo/logo.png" alt="Badariya Flowers logo">
+    <span class="admin-brand-text">
+      <strong>Badariya Flowers</strong>
+      <span>Admin Panel</span>
+    </span>
+  </a>
+
+  <svg class="admin-scallop" viewBox="0 0 260 14" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,0 H260 V5 C240,13 220,2 200,10 C180,2 160,13 140,5 C120,13 100,2 80,10 C60,2 40,13 20,5 C10,9 5,11 0,10 Z"></path>
+  </svg>
+
+  <nav class="admin-nav" aria-label="Admin navigation">
+    <a href="/admin/dashboard.html" class="admin-nav-link is-active" data-nav="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="12" width="8" height="9" rx="2"/><rect x="3" y="14" width="8" height="7" rx="2"/></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="/admin/categories" class="admin-nav-link" data-nav="categories">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      <span>Categories</span>
+    </a>
+    <a href="/admin/subcategories" class="admin-nav-link" data-nav="subcategories">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4" cy="6" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="4" cy="18" r="1.6"/></svg>
+      <span>Sub Categories</span>
+    </a>
+    <a href="/admin/products" class="admin-nav-link" data-nav="products">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7L12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>
+      <span>Products</span>
+    </a>
+    <a href="/admin/catalogue" class="admin-nav-link" data-nav="catalogue">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>
+      <span>Catalogue PDF</span>
+    </a>
+
+    <div class="admin-nav-label">System</div>
+    <a href="/admin/settings" class="admin-nav-link" data-nav="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1 1.55V21a2 2 0 11-4 0v-.09a1.7 1.7 0 00-1-1.55 1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.7 1.7 0 00.34-1.87 1.7 1.7 0 00-1.55-1H3a2 2 0 110-4h.09a1.7 1.7 0 001.55-1 1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06a1.7 1.7 0 001.87.34H9a1.7 1.7 0 001-1.55V3a2 2 0 114 0v.09a1.7 1.7 0 001 1.55 1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06a1.7 1.7 0 00-.34 1.87V9a1.7 1.7 0 001.55 1H21a2 2 0 110 4h-.09a1.7 1.7 0 00-1.55 1z"/></svg>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <div class="admin-sidebar-footer">
+    <a href="../index.html" class="admin-nav-link" id="adminLogout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      <span>Logout</span>
+    </a>
+  </div>
+</aside>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title id="pageTitleTag">Categories — Badariya Flowers</title>
+<meta name="description" content="Browse Badariya Flowers' full catalogue of handcrafted torans, latkans, jhoomars, malas and wall hangings.">
+<link rel="icon" href="/assets/images/logo/logo.png">
+<link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body data-page="category">
+
+<header class="site-header" id="siteHeader"></header>
+
+<main>
+  <div class="container">
+    <nav class="breadcrumb-row" id="breadcrumbRow"></nav>
+
+    <div class="cat-page-head">
+      <h1 id="pageTitle">Categories</h1>
+      <div class="count" id="pageCount"></div>
+      <div class="actions" id="pageActions"></div>
+    </div>
+
+    <!-- Shown when browsing a category with multiple subcategories (picker grid) -->
+    <div class="cat-grid" id="subcatGrid" style="display:none"></div>
+
+    <!-- Shown when browsing a specific subcategory (product grid) -->
+    <div id="productGridWrap" style="display:none">
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+
+    <!-- Shown on the "all categories" landing page -->
+    <div class="cat-grid" id="allCatGrid" style="display:none"></div>
+  </div>
+</main>
+
+<footer class="site-footer" id="siteFooter"></footer>
+<a href="#" class="fab-whatsapp" id="fabWa" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"></a>
+
+<script src="/assets/js/api.js"></script>
+<script src="/assets/js/config.js"></script>
+<script src="/assets/js/catalog.js"></script>
+<script src="/assets/js/cart.js"></script>
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/cards.js"></script>
+<script src="/assets/js/category.js"></script>
+</body>
+</html>

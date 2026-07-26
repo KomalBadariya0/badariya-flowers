@@ -1,0 +1,101 @@
+{% set values = form_values or {} %}
+{% set name_val = values.get('name', sub_category.name if sub_category else '') %}
+{% set category_val = values.get('categoryId', sub_category.categoryId if sub_category else '') %}
+{% set slug_val = values.get('slug', sub_category.slug if sub_category else '') %}
+{% set status_val = values.get('status', sub_category.status if sub_category else 'active') %}
+{% set sort_val = values.get('sortOrder', next_sort_order) %}
+{% set image_val = values.get('image', sub_category.image if sub_category else None) %}
+
+<div class="cat-modal-body">
+  <input type="hidden" id="subCategoryId" value="{{ sub_category.id if sub_category else '' }}">
+
+  <div class="cat-form-row">
+    <div class="cat-form-group">
+      <label for="subCategoryParent">Category <span class="req">*</span></label>
+      <select id="subCategoryParent" name="categoryId" class="{{ 'is-invalid' if errors.get('categoryId') }}">
+        <option value="">Select a category…</option>
+        {% for c in categories %}
+        <option value="{{ c.id }}" {{ 'selected' if category_val|string == c.id|string }}>{{ c.name }}</option>
+        {% endfor %}
+      </select>
+      <span class="cat-field-error" id="subCategoryParentError">{{ errors.get('categoryId', '') }}</span>
+    </div>
+  </div>
+
+  <div class="cat-form-row">
+    <div class="cat-form-group">
+      <label for="subCategoryName">Sub Category Name <span class="req">*</span></label>
+      <input type="text" id="subCategoryName" name="name" placeholder="e.g. 4 Feet Toran" autocomplete="off"
+        value="{{ name_val }}"
+        class="{{ 'is-invalid' if errors.get('name') }}"
+        oninput="if(document.getElementById('subCategorySlug').dataset.manual!=='true'){document.getElementById('subCategorySlug').value=window.bfSlugify(this.value);}">
+      <span class="cat-field-error" id="subCategoryNameError">{{ errors.get('name', '') }}</span>
+    </div>
+  </div>
+
+  <div class="cat-form-row">
+    <div class="cat-form-group">
+      <label for="subCategorySlug">
+        Slug <span class="req">*</span>
+        <button type="button" class="cat-slug-auto-toggle{{ '' if sub_category else ' is-active' }}" id="subCategorySlugAutoToggle"
+          onclick="document.getElementById('subCategorySlug').dataset.manual='false'; this.classList.add('is-active'); document.getElementById('subCategorySlug').value=window.bfSlugify(document.getElementById('subCategoryName').value);">Auto</button>
+      </label>
+      <input type="text" id="subCategorySlug" name="slug" placeholder="e.g. toran-4ft" autocomplete="off"
+        value="{{ slug_val }}"
+        data-manual="{{ 'true' if sub_category else 'false' }}"
+        class="{{ 'is-invalid' if errors.get('slug') }}"
+        oninput="this.dataset.manual='true'; document.getElementById('subCategorySlugAutoToggle').classList.remove('is-active');">
+      <span class="cat-field-error" id="subCategorySlugError">{{ errors.get('slug', '') }}</span>
+    </div>
+  </div>
+
+  <div class="cat-form-row">
+    <div class="cat-form-group">
+      <label>Sub Category Image</label>
+      <div class="cat-image-upload" id="subCategoryImageDrop" onclick="document.getElementById('subCategoryImageInput').click();">
+        <div class="cat-image-preview" id="subCategoryImagePreview">
+          {% with image_url = image_val, error = None %}
+          {% include "admin/partials/sub_category_image_preview_inner.html" %}
+          {% endwith %}
+        </div>
+        <div class="cat-image-upload-text">
+          <strong>Upload sub category image</strong>
+          <span>PNG or JPG, up to 2MB</span>
+          <span id="subCategoryImageUploadingNote" class="htmx-indicator" style="color:var(--accent);font-weight:600;">Uploading…</span>
+        </div>
+        <input type="file" id="subCategoryImageInput" name="file" accept="image/png,image/jpeg" hidden
+          hx-post="/admin/subcategories/upload-image" hx-trigger="change" hx-target="#subCategoryImagePreview"
+          hx-swap="innerHTML" hx-encoding="multipart/form-data"
+          hx-disabled-elt="#subCategoryFormSave" hx-indicator="#subCategoryImageUploadingNote">
+      </div>
+      <input type="hidden" id="subCategoryImageValue" name="image" value="{{ image_val or '' }}">
+    </div>
+  </div>
+
+  <div class="cat-form-row">
+    <div class="cat-form-group">
+      <label for="subCategoryStatus">Status</label>
+      <select id="subCategoryStatus" name="status">
+        <option value="active" {{ 'selected' if status_val == 'active' }}>Active</option>
+        <option value="inactive" {{ 'selected' if status_val == 'inactive' }}>Inactive</option>
+      </select>
+    </div>
+    <div class="cat-form-group">
+      <label for="subCategorySortOrder">Sort Order</label>
+      <input type="number" id="subCategorySortOrder" name="sortOrder" min="0" step="1" placeholder="0" value="{{ sort_val }}">
+    </div>
+  </div>
+</div>
+
+<div class="cat-modal-foot">
+  <button type="button" class="btn btn-outline btn-sm" data-close-modal>Cancel</button>
+  {% if sub_category %}
+  <button type="button" class="btn btn-primary btn-sm" id="subCategoryFormSave"
+    hx-put="/admin/subcategories/{{ sub_category.id }}" hx-target="#subCategoryTableBody" hx-swap="innerHTML"
+    hx-include="closest form">Save Changes</button>
+  {% else %}
+  <button type="button" class="btn btn-primary btn-sm" id="subCategoryFormSave"
+    hx-post="/admin/subcategories" hx-target="#subCategoryTableBody" hx-swap="innerHTML"
+    hx-include="closest form">Save Sub Category</button>
+  {% endif %}
+</div>

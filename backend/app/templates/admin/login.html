@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — Badariya Flowers</title>
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/admin/assets/css/admin.css">
+<style>
+
+  body.admin-login-body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: linear-gradient(180deg, var(--admin-dark) 0%, var(--admin-dark-2) 100%);
+    padding:24px;
+  }
+  .admin-login-card{
+    background: ghostwhite;
+    width:100%;
+    max-width:400px;
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lift, 0 24px 60px rgba(0,0,0,.25));
+    padding:40px 36px;
+  }
+  .admin-login-brand{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    margin-bottom:28px;
+  }
+  .admin-login-brand img{ width:56px; height:56px; object-fit:contain; margin-bottom:12px; }
+  .admin-login-brand strong{ font-family:"Cormorant Garamond", serif; font-size:1.5rem; color:var(--heading); display:block; }
+  .admin-login-brand span{ font-size:.85rem; color:var(--text); letter-spacing:.02em; }
+  .admin-login-field{ margin-bottom:18px; }
+  .admin-login-field label{ display:block; font-size:.85rem; font-weight:600; color:var(--heading); margin-bottom:6px; }
+  .admin-login-field input{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    font-family:inherit;
+    font-size:.95rem;
+    background:#fff;
+  }
+  .admin-login-field input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .admin-login-error{
+    background: rgba(233, 230, 229, 0.838);
+    color: var(--danger);
+    border:1px solid rgba(181,101,74,0.3);
+    border-radius:10px;
+    padding:10px 14px;
+    font-size:.88rem;
+    margin-bottom:18px;
+  }
+  .admin-login-submit{
+    width:100%;
+    padding:13px;
+    border:none;
+    border-radius:10px;
+    background: var(--primary);
+    color:#fff;
+    font-weight:600;
+    font-size:.98rem;
+    cursor:pointer;
+    transition: background .2s ease;
+  }
+  .admin-login-submit:hover{ background: var(--hover); }
+  .admin-login-back{
+    display:block;
+    text-align:center;
+    margin-top:20px;
+    font-size:.85rem;
+    color:var(--text);
+    text-decoration:none;
+  }
+  .admin-login-back:hover{ color:var(--primary); }
+</style>
+</head>
+<body class="admin-login-body">
+
+  <div class="admin-login-card">
+    <div class="admin-login-brand">
+      <img src="/assets/images/logo/logo.png" alt="Badariya Flowers logo">
+      <strong>Badariya Flowers</strong>
+      <span>Admin Panel Login</span>
+    </div>
+
+    {% if error %}
+    <div class="admin-login-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/admin/login">
+      <input type="hidden" name="next" value="{{ next_url or '' }}">
+      <div class="admin-login-field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{ email or '' }}" placeholder="admin@badariyaflowers.com" required autofocus>
+      </div>
+      <div class="admin-login-field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="admin-login-submit">Log In</button>
+    </form>
+
+    <a href="/" class="admin-login-back">&larr; Back to website</a>
+  </div>
+
+</body>
+</html>

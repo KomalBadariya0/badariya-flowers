@@ -1,0 +1,66 @@
+{% extends "layout/base_admin.html" %}
+{% block title %}{{ 'Edit Product' if product else 'Add Product' }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/admin/assets/css/categories.css">
+<link rel="stylesheet" href="/admin/assets/css/products.css">
+{% endblock %}
+
+{% block content %}
+{% set v = form_values or {} %}
+{% set featured_val = v.get('featured', product.featured if product else False) %}
+{% set active_val = v.get('active', product.active if product else True) %}
+<div class="admin-page-head">
+  <div>
+    <span class="admin-breadcrumb">Admin Panel / Products</span>
+    <h1>{{ 'Edit Product' if product else 'Add Product' }}</h1>
+  </div>
+  <a href="/admin/products" class="btn btn-outline btn-sm">Back to Products</a>
+</div>
+
+<form id="productForm" novalidate onsubmit="return false;">
+  <input type="hidden" id="productId" value="{{ product.id if product else '' }}">
+
+  <div class="prod-form-shell">
+
+    <!-- ============ MAIN COLUMN ============ -->
+    <div class="admin-card">
+      <div id="productFormFields">
+        {% include "admin/partials/product_form_fields.html" %}
+      </div>
+    </div>
+
+    <!-- ============ SIDE COLUMN ============ -->
+    <div class="prod-side-col">
+      <div class="admin-card" style="padding:20px;">
+        <div class="prod-switch-row" style="margin-bottom:12px;">
+          <div><strong>Featured Product</strong><span>Show in the homepage featured section</span></div>
+          <label class="prod-switch"><input type="checkbox" id="fFeatured" name="featured" {{ 'checked' if featured_val }}><span class="prod-switch-track"></span></label>
+        </div>
+        <div class="prod-switch-row">
+          <div><strong>Active</strong><span>Visible on the customer website</span></div>
+          <label class="prod-switch"><input type="checkbox" id="fActive" name="active" {{ 'checked' if active_val }}><span class="prod-switch-track"></span></label>
+        </div>
+      </div>
+
+      <div class="admin-card" style="padding:20px; display:flex; flex-direction:column; gap:10px;">
+        {% if product %}
+        <button type="button" class="btn btn-primary btn-block" id="productFormSave"
+          hx-put="/admin/products/{{ product.id }}" hx-target="#productFormFields" hx-swap="outerHTML"
+          hx-include="closest form">Save Changes</button>
+        {% else %}
+        <button type="button" class="btn btn-primary btn-block" id="productFormSave"
+          hx-post="/admin/products" hx-target="#productFormFields" hx-swap="outerHTML"
+          hx-include="closest form">Save Product</button>
+        {% endif %}
+        <a href="/admin/products" class="btn btn-outline btn-block">Cancel</a>
+      </div>
+    </div>
+
+  </div>
+</form>
+{% endblock %}
+
+{% block modals %}
+<div class="cat-toast" id="productToast"><span id="productToastMsg">Saved</span></div>
+{% endblock %}

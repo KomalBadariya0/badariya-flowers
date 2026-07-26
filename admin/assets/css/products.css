@@ -1,0 +1,223 @@
+/* ==========================================================================
+   BADARIYA FLOWERS — ADMIN · PRODUCTS (page-specific)
+   Depends on ../../assets/css/style.css, admin.css AND categories.css
+   (loaded before this file). Table cells, modal shell, form fields, toast,
+   pagination-adjacent primitives are reused from categories.css — only the
+   product-specific pieces live here: image gallery uploader with drag
+   reorder, tabbed form sections, tag input, featured/active switches, and
+   the SEO field group. No new colors/radii/shadows — same tokens as always.
+   ========================================================================== */
+
+/* ============ LIST TOOLBAR (4th filter fits via existing wrap) ============ */
+.prod-price-cell{ font-family:var(--font-display); font-weight:700; color:var(--heading); font-size:14px; }
+.prod-name-cell strong{ display:block; font-size:13.5px; color:var(--heading); font-weight:600; }
+.prod-name-cell span{ font-size:11px; color:var(--text); }
+.prod-featured-star{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:9px; border:1px solid var(--border);
+  background:var(--card); color:var(--border); transition:all .2s ease;
+}
+.prod-featured-star.is-featured{ background:rgba(201,166,107,0.16); color:var(--accent); border-color:transparent; }
+.prod-featured-star svg{ width:15px; height:15px; }
+
+/* ============ PAGINATION (list page) ============ */
+.prod-pagination{ display:flex; align-items:center; justify-content:center; gap:6px; padding:20px 0 4px; }
+.prod-page-btn{
+  min-width:34px; height:34px; padding:0 8px; border-radius:9px;
+  border:1px solid var(--border); background:var(--card); color:var(--heading);
+  font-size:12.5px; font-weight:600; transition:all .2s ease;
+}
+.prod-page-btn:hover{ border-color:var(--accent); }
+.prod-page-btn.is-active{ background:var(--primary); color:#fff; border-color:var(--primary); }
+.prod-page-btn.is-disabled{ opacity:0.4; pointer-events:none; }
+
+/* ============ FORM SHELL (add/edit pages, not modals) ============ */
+.prod-form-shell{
+  display:grid; grid-template-columns:1fr; gap:20px;
+  align-items:start;
+}
+@media (min-width:1024px){
+  .prod-form-shell{ grid-template-columns:1.6fr 1fr; }
+}
+
+/* ============ TABS ============ */
+.prod-tabs{
+  display:flex; gap:4px; overflow-x:auto;
+  border-bottom:1px solid var(--border); padding:0 4px;
+}
+.prod-tab-btn{
+  flex:0 0 auto; padding:13px 16px; font-size:12.5px; font-weight:600;
+  color:var(--text); border-bottom:2px solid transparent; white-space:nowrap;
+  transition:color .2s ease, border-color .2s ease;
+}
+.prod-tab-btn:hover{ color:var(--heading); }
+.prod-tab-btn.is-active{ color:var(--primary); border-bottom-color:var(--primary); }
+.prod-tab-panel{ display:none; padding:20px 22px; }
+.prod-tab-panel.is-active{ display:block; }
+
+/* ============ IMAGE GALLERY UPLOADER ============ */
+.prod-gallery-drop{
+  border:1.5px dashed var(--border); border-radius:14px;
+  padding:22px; text-align:center; cursor:pointer;
+  transition:border-color .2s ease, background .2s ease;
+}
+.prod-gallery-drop:hover, .prod-gallery-drop.is-dragover{ border-color:var(--accent); background:rgba(201,166,107,0.05); }
+.prod-gallery-drop svg{ width:26px; height:26px; color:var(--accent); margin-bottom:8px; }
+.prod-gallery-drop strong{ display:block; font-size:13.5px; color:var(--heading); font-weight:600; }
+.prod-gallery-drop span{ font-size:11.5px; color:var(--text); }
+
+.prod-gallery-grid{
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); gap:12px;
+  margin-top:16px;
+}
+.prod-gallery-item{
+  position:relative; aspect-ratio:1; border-radius:12px; overflow:hidden;
+  border:1px solid var(--border); background:var(--bg);
+  cursor:grab;
+}
+.prod-gallery-item.is-dragging{ opacity:0.4; }
+.prod-gallery-item img{ width:100%; height:100%; object-fit:cover; }
+.prod-gallery-item .prod-gallery-cover-badge{
+  position:absolute; top:6px; left:6px;
+  font-size:9.5px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;
+  padding:3px 8px; border-radius:100px; background:var(--heading); color:#fff;
+}
+.prod-gallery-item .prod-gallery-remove{
+  position:absolute; top:6px; right:6px;
+  width:22px; height:22px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(58,44,35,0.7); color:#fff; border:none;
+}
+.prod-gallery-item .prod-gallery-remove svg{ width:12px; height:12px; }
+
+/* ============ TAGS INPUT ============ */
+.prod-tags-input{
+  display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  border:1px solid var(--border); border-radius:12px; padding:9px 12px;
+  background:#fff; min-height:46px;
+}
+.prod-tags-input:focus-within{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(139,94,60,0.12); }
+.prod-tag-chip{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11.5px; font-weight:600; color:var(--heading);
+  background:rgba(201,166,107,0.14); border-radius:100px; padding:5px 8px 5px 12px;
+}
+.prod-tag-chip button{ display:flex; color:var(--text); }
+.prod-tag-chip button svg{ width:11px; height:11px; }
+.prod-tags-input input{
+  flex:1; min-width:120px; border:none; outline:none; font-family:var(--font-body); font-size:13px;
+}
+
+/* ============ SWITCHES (Featured / Active) ============ */
+.prod-switch-row{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:13px 16px; border:1px solid var(--border); border-radius:12px; background:var(--bg);
+}
+.prod-switch-row strong{ font-size:13px; color:var(--heading); font-weight:600; }
+.prod-switch-row span{ display:block; font-size:11px; color:var(--text); margin-top:1px; }
+.prod-switch{ position:relative; width:44px; height:24px; flex:0 0 44px; }
+.prod-switch input{ position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; }
+.prod-switch-track{
+  position:absolute; inset:0; border-radius:100px; background:var(--border);
+  transition:background .2s ease;
+}
+.prod-switch-track::after{
+  content:""; position:absolute; top:3px; left:3px; width:18px; height:18px;
+  border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.2);
+  transition:transform .2s ease;
+}
+.prod-switch input:checked + .prod-switch-track{ background:var(--primary); }
+.prod-switch input:checked + .prod-switch-track::after{ transform:translateX(20px); }
+
+/* ============ SPEC / FEATURE LIST BUILDER ============ */
+.prod-list-builder{ display:flex; flex-direction:column; gap:10px; }
+.prod-list-row{ display:flex; gap:8px; }
+.prod-list-row input{ flex:1; }
+.prod-list-remove-btn{
+  width:38px; height:38px; flex:0 0 38px; border-radius:10px;
+  border:1px solid var(--border); background:var(--card); color:var(--danger);
+  display:flex; align-items:center; justify-content:center;
+}
+.prod-list-remove-btn svg{ width:15px; height:15px; }
+.prod-list-add-btn{
+  align-self:flex-start; font-size:12px; font-weight:600; color:var(--primary);
+  display:inline-flex; align-items:center; gap:6px; padding:8px 4px;
+}
+.prod-list-add-btn svg{ width:14px; height:14px; }
+
+/* ============ SIDE COLUMN (side panels on the add/edit form) ============ */
+.prod-side-col{ display:flex; flex-direction:column; gap:16px; }
+
+/* ============ SEO FIELD GROUP ============ */
+.prod-seo-preview{
+  border:1px solid var(--border); border-radius:12px; padding:14px 16px; background:var(--bg);
+}
+.prod-seo-preview .url{ font-size:11.5px; color:#5c6f55; }
+.prod-seo-preview .title{ font-size:14px; color:#1a0dab; font-weight:500; margin:2px 0; }
+.prod-seo-preview .desc{ font-size:12px; color:var(--text); line-height:1.5; }
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:640px){
+  .prod-tab-panel{ padding:16px; }
+  .prod-gallery-grid{ grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); }
+}
+
+@media (max-width:640px){
+  body[data-admin-page="products"] .admin-table-wrap{ overflow-x:visible; padding:12px 14px 4px; }
+  body[data-admin-page="products"] .admin-table{ min-width:0; width:100%; }
+  body[data-admin-page="products"] .admin-table thead{ display:none; }
+  body[data-admin-page="products"] .admin-table,
+  body[data-admin-page="products"] .admin-table tbody,
+  body[data-admin-page="products"] .admin-table tr{ display:block; width:100%; }
+
+  body[data-admin-page="products"] .admin-table tbody tr{
+    display:flex; flex-wrap:wrap; align-items:center;
+    border:1px solid var(--border); border-radius:14px;
+    padding:14px; margin:0 0 12px; background:var(--card);
+  }
+  body[data-admin-page="products"] .admin-table tbody tr:last-child{ margin-bottom:0; }
+
+  body[data-admin-page="products"] .admin-table tbody td{ padding:0; border:none; }
+
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(1){
+    order:1; flex:0 0 auto;
+  }
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(2){
+    order:2; flex:1 1 auto; min-width:0; padding-left:12px;
+  }
+
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(3),
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(4),
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(5),
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(6),
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(7),
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(8),
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(9){
+    order:3; flex:1 1 100%;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding-top:10px; margin-top:10px; border-top:1px solid var(--border);
+    font-size:13px;
+  }
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(3)::before,
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(4)::before,
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(5)::before,
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(6)::before,
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(7)::before,
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(8)::before,
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(9)::before{
+    content:attr(data-label);
+    font-size:10.5px; letter-spacing:1px; text-transform:uppercase;
+    color:var(--accent); font-weight:700; flex:0 0 auto;
+  }
+
+  body[data-admin-page="products"] .admin-table tbody td:nth-child(10){
+    order:4; flex:1 1 100%;
+    padding-top:12px; margin-top:12px; border-top:1px solid var(--border);
+  }
+  body[data-admin-page="products"] .cat-actions-cell{ justify-content:flex-start; gap:10px; }
+  body[data-admin-page="products"] .cat-action-btn{ width:38px; height:38px; }
+
+  body[data-admin-page="products"] .cat-toolbar{ flex-direction:column; align-items:stretch; }
+  body[data-admin-page="products"] .cat-filter-select{ width:100%; }
+  body[data-admin-page="products"] #productFilters{ display:flex !important; flex-direction:column; gap:10px; width:100%; }
+}

@@ -1,0 +1,12 @@
+<div class="cat-confirm-icon">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+</div>
+<h3>Delete Sub Category?</h3>
+<p>Are you sure you want to delete <strong>{{ sub_category.name }}</strong>? This action cannot be undone and it will be removed from the customer website.</p>
+<div class="cat-modal-foot cat-modal-foot--center">
+  <button type="button" class="btn btn-outline btn-sm" data-close-modal>Cancel</button>
+  <button type="button" class="btn btn-danger btn-sm"
+    hx-delete="/admin/subcategories/{{ sub_category.id }}" hx-target="#subCategoryTableBody" hx-swap="innerHTML">
+    Delete Sub Category
+  </button>
+</div>

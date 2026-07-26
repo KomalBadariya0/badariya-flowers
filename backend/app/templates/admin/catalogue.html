@@ -1,0 +1,46 @@
+{% extends "layout/base_admin.html" %}
+{% block title %}Catalogue PDF{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/admin/assets/css/categories.css">
+{% endblock %}
+
+{% block content %}
+<div class="admin-page-head">
+  <div>
+    <span class="admin-breadcrumb">Admin Panel</span>
+    <h1>Catalogue PDF</h1>
+  </div>
+</div>
+
+{% include "admin/partials/catalogue_content.html" %}
+{% endblock %}
+
+{% block modals %}
+<!-- ============ UPLOAD / REPLACE MODAL (shared: master + per sub-category) ============ -->
+<div class="cat-modal-overlay" id="catalogueUploadModal">
+  <div class="cat-modal">
+    <div class="cat-modal-head">
+      <h3>Catalogue PDF</h3>
+      <button class="cat-modal-close" type="button" aria-label="Close" data-close-modal>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <form id="catalogueUploadForm" novalidate onsubmit="return false;">
+      <!-- filled by /admin/catalogue/master/upload-form or /admin/catalogue/subcategory/{id}/upload-form -->
+    </form>
+  </div>
+</div>
+
+<!-- ============ DELETE CONFIRM MODAL ============ -->
+<div class="cat-modal-overlay" id="catalogueDeleteModal">
+  <div class="cat-modal cat-modal--confirm" id="catalogueDeleteBody">
+    <!-- filled by /admin/catalogue/{id}/confirm-delete -->
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="cat-toast" id="catalogueToast">
+  <span id="catalogueToastMsg">Saved</span>
+</div>
+{% endblock %}

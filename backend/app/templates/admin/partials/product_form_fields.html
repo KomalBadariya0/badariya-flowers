@@ -1,0 +1,275 @@
+{% set v = form_values or {} %}
+{% set name_val = v.get('name', product.name if product else '') %}
+{% set category_val = v.get('categoryId', product.categoryId if product else '') %}
+{% set sub_category_val = v.get('subCategoryId', product.subCategoryId if product else '') %}
+{% set sku_val = v.get('sku', product.sku if product else '') %}
+{% set price_val = v.get('price', product.price if product else '') %}
+{% set price_note_val = v.get('priceNote', product.priceNote if product else '') %}
+{% set moq_val = v.get('moq', product.moq if product else 1) %}
+{% set short_desc_val = v.get('shortDesc', product.shortDesc if product else '') %}
+{% set full_desc_val = v.get('fullDesc', product.fullDesc if product else '') %}
+{% set material_val = v.get('material', product.material if product else '') %}
+{% set color_val = v.get('color', product.color if product else '') %}
+{% set weight_val = v.get('weight', product.weight if product else '') %}
+{% set dimensions_val = v.get('dimensions', product.dimensions if product else '') %}
+{% set tags_val = v.get('tags', product.tags if product else []) %}
+{% set images_val = v.get('images', product.images if product else []) %}
+{% set usage_val = v.get('usage', product.usage if product else '') %}
+{% set care_val = v.get('careInstructions', product.careInstructions if product else '') %}
+{% set specs_val = product.specifications if (product and not form_values) else [] %}
+{% set features_val = v.get('features', product.features if product else []) %}
+{% set seo = product.seo if product else None %}
+{% set seo_title_val = v.get('seoTitle', seo.title if seo else '') %}
+{% set seo_desc_val = v.get('seoDesc', seo.description if seo else '') %}
+{% set seo_keywords_val = v.get('seoKeywords', seo.keywords if seo else '') %}
+{% set seo_slug_val = v.get('seoSlug', seo.slug if seo else '') %}
+
+<div id="productFormFields">
+
+  <div class="prod-tabs" role="tablist">
+    <button type="button" class="prod-tab-btn is-active" data-prod-tab="basic">Basic Info</button>
+    <button type="button" class="prod-tab-btn" data-prod-tab="images">Images</button>
+    <button type="button" class="prod-tab-btn" data-prod-tab="details">Details</button>
+    <button type="button" class="prod-tab-btn" data-prod-tab="seo">SEO</button>
+  </div>
+
+  <!-- ============ TAB: BASIC INFO ============ -->
+  <div class="prod-tab-panel is-active" data-prod-panel="basic">
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productName">Product Name <span class="req">*</span></label>
+        <input type="text" id="productName" name="name" placeholder="e.g. Genda 3 Feet Fancy Latkan" autocomplete="off"
+          value="{{ name_val }}" class="{{ 'is-invalid' if errors.get('name') }}">
+        <span class="cat-field-error">{{ errors.get('name', '') }}</span>
+      </div>
+    </div>
+
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productCategory">Category</label>
+        <select id="productCategory" name="categoryId"
+          hx-get="/admin/products/subcategory-options" hx-target="#productSubCategory" hx-swap="innerHTML"
+          hx-trigger="change" hx-include="this">
+          <option value="">No category</option>
+          {% for c in categories %}
+          <option value="{{ c.id }}" {{ 'selected' if category_val|string == c.id|string }}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="cat-form-group">
+        <label for="productSubCategory">Sub Category <span class="req">*</span></label>
+        <select id="productSubCategory" name="subCategoryId" class="{{ 'is-invalid' if errors.get('subCategoryId') }}">
+          <option value="">Select a sub category…</option>
+          {% for s in sub_categories %}
+          <option value="{{ s.id }}" {{ 'selected' if sub_category_val|string == s.id|string }}>{{ s.name }}</option>
+          {% endfor %}
+        </select>
+        <span class="cat-field-error">{{ errors.get('subCategoryId', '') }}</span>
+      </div>
+    </div>
+
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productSku">SKU</label>
+        <input type="text" id="productSku" name="sku" placeholder="e.g. Article-1" autocomplete="off"
+          value="{{ sku_val or '' }}" class="{{ 'is-invalid' if errors.get('sku') }}">
+        <span class="cat-field-error">{{ errors.get('sku', '') }}</span>
+      </div>
+      <div class="cat-form-group">
+        <label for="productMoq">MOQ</label>
+        <input type="number" id="productMoq" name="moq" min="1" step="1" value="{{ moq_val }}">
+      </div>
+    </div>
+
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productPrice">Price (₹)</label>
+        <input type="number" id="productPrice" name="price" min="0" step="0.01" placeholder="e.g. 350"
+          value="{{ price_val if price_val is not none else '' }}" class="{{ 'is-invalid' if errors.get('price') }}">
+        <span class="cat-field-error">{{ errors.get('price', '') }}</span>
+      </div>
+      <div class="cat-form-group">
+        <label for="productPriceNote">Price Note <span style="font-weight:400;color:var(--text);">(shown when no price)</span></label>
+        <input type="text" id="productPriceNote" name="priceNote" placeholder="e.g. Ask on WhatsApp"
+          value="{{ price_note_val or '' }}">
+      </div>
+    </div>
+
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productShortDesc">Short Description</label>
+        <textarea id="productShortDesc" name="shortDesc" rows="2" placeholder="One or two lines shown on the product card">{{ short_desc_val or '' }}</textarea>
+      </div>
+    </div>
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productFullDesc">Full Description</label>
+        <textarea id="productFullDesc" name="fullDesc" rows="4" placeholder="Full product description shown on the product page">{{ full_desc_val or '' }}</textarea>
+      </div>
+    </div>
+
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productMaterial">Material</label>
+        <input type="text" id="productMaterial" name="material" placeholder="e.g. Artificial Genda flower, thread" value="{{ material_val or '' }}">
+      </div>
+      <div class="cat-form-group">
+        <label for="productColor">Color</label>
+        <input type="text" id="productColor" name="color" placeholder="e.g. Yellow, Red" value="{{ color_val or '' }}">
+      </div>
+    </div>
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productWeight">Weight</label>
+        <input type="text" id="productWeight" name="weight" placeholder="e.g. 250g" value="{{ weight_val or '' }}">
+      </div>
+      <div class="cat-form-group">
+        <label for="productDimensions">Dimensions / Size</label>
+        <input type="text" id="productDimensions" name="dimensions" placeholder="e.g. 3 Feet" value="{{ dimensions_val or '' }}">
+      </div>
+    </div>
+
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label>Tags</label>
+        <div class="prod-tags-input" id="productTagsInput">
+          {% for t in tags_val %}
+          <span class="prod-tag-chip">{{ t }}<input type="hidden" name="tags" value="{{ t }}"><button type="button" data-prod-remove-chip aria-label="Remove tag">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button></span>
+          {% endfor %}
+          <input type="text" placeholder="Type a tag and press Enter" data-prod-tag-entry autocomplete="off">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB: IMAGES ============ -->
+  <div class="prod-tab-panel" data-prod-panel="images">
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label>Product Images <span style="font-weight:400;color:var(--text);">(first image is the cover — drag to reorder)</span></label>
+        <div class="prod-gallery-drop" id="productGalleryDrop" onclick="document.getElementById('productGalleryInput').click();">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <strong>Upload product images</strong>
+          <span>PNG or JPG, up to 2MB each — select multiple at once</span>
+          <span id="productGalleryUploadingNote" class="htmx-indicator" style="color:var(--accent);font-weight:600;">Uploading…</span>
+        </div>
+        <input type="file" id="productGalleryInput" name="files" accept="image/png,image/jpeg" multiple hidden
+          hx-post="/admin/products/upload-images" hx-trigger="change" hx-target="#productGalleryGrid" hx-swap="beforeend"
+          hx-encoding="multipart/form-data" hx-indicator="#productGalleryUploadingNote">
+        <div class="prod-gallery-grid" id="productGalleryGrid">
+          {% for url in images_val %}
+          <div class="prod-gallery-item" draggable="true">
+            {% if loop.first %}<span class="prod-gallery-cover-badge">Cover</span>{% endif %}
+            <img src="{{ url }}" alt="Product image">
+            <input type="hidden" name="images" value="{{ url }}">
+            <button type="button" class="prod-gallery-remove" data-prod-remove-image aria-label="Remove image">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB: DETAILS ============ -->
+  <div class="prod-tab-panel" data-prod-panel="details">
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label>Specifications</label>
+        <div class="prod-list-builder" id="productSpecsBuilder">
+          {% for s in specs_val %}
+          <div class="prod-list-row">
+            <input type="text" name="specLabel" placeholder="Label, e.g. Size" value="{{ s.label }}">
+            <input type="text" name="specValue" placeholder="Value, e.g. 3 Feet" value="{{ s.value }}">
+            <button type="button" class="prod-list-remove-btn" data-prod-remove-row aria-label="Remove specification">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+            </button>
+          </div>
+          {% endfor %}
+        </div>
+        <button type="button" class="prod-list-add-btn" data-prod-add-spec>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Add specification
+        </button>
+      </div>
+    </div>
+
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label>Features</label>
+        <div class="prod-list-builder" id="productFeaturesBuilder">
+          {% for f in features_val %}
+          <div class="prod-list-row">
+            <input type="text" name="features" placeholder="e.g. Handcrafted with real thread" value="{{ f }}">
+            <button type="button" class="prod-list-remove-btn" data-prod-remove-row aria-label="Remove feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+            </button>
+          </div>
+          {% endfor %}
+        </div>
+        <button type="button" class="prod-list-add-btn" data-prod-add-feature>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Add feature
+        </button>
+      </div>
+    </div>
+
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productUsage">Usage</label>
+        <textarea id="productUsage" name="usage" rows="3" placeholder="e.g. Ideal for door decoration during festivals and weddings">{{ usage_val or '' }}</textarea>
+      </div>
+    </div>
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productCare">Care Instructions</label>
+        <textarea id="productCare" name="careInstructions" rows="3" placeholder="e.g. Keep away from direct sunlight and moisture">{{ care_val or '' }}</textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB: SEO ============ -->
+  <div class="prod-tab-panel" data-prod-panel="seo">
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productSeoTitle">SEO Title</label>
+        <input type="text" id="productSeoTitle" name="seoTitle" placeholder="Defaults to the product name"
+          value="{{ seo_title_val or '' }}" data-prod-seo-field="title">
+      </div>
+    </div>
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productSeoDesc">SEO Description</label>
+        <textarea id="productSeoDesc" name="seoDesc" rows="2" placeholder="Defaults to the short description"
+          data-prod-seo-field="desc">{{ seo_desc_val or '' }}</textarea>
+      </div>
+    </div>
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productSeoKeywords">SEO Keywords</label>
+        <input type="text" id="productSeoKeywords" name="seoKeywords" placeholder="Comma separated, e.g. genda latkan, toran"
+          value="{{ seo_keywords_val or '' }}">
+      </div>
+    </div>
+    <div class="cat-form-row">
+      <div class="cat-form-group">
+        <label for="productSeoSlug">
+          Slug
+          <button type="button" class="cat-slug-auto-toggle" onclick="document.getElementById('productSeoSlug').value=window.bfSlugify(document.getElementById('productName').value); window.bfUpdateSeoPreview();">Auto</button>
+        </label>
+        <input type="text" id="productSeoSlug" name="seoSlug" placeholder="e.g. genda-3-feet-fancy-latkan"
+          value="{{ seo_slug_val or '' }}" data-prod-seo-field="slug">
+      </div>
+    </div>
+
+    <div class="prod-seo-preview" id="productSeoPreview">
+      <div class="url">badariyaflowers.com/product/<span id="productSeoPreviewSlug">{{ seo_slug_val or 'product-slug' }}</span></div>
+      <div class="title" id="productSeoPreviewTitle">{{ seo_title_val or name_val or 'Product title' }}</div>
+      <div class="desc" id="productSeoPreviewDesc">{{ seo_desc_val or short_desc_val or 'Product description preview appears here.' }}</div>
+    </div>
+  </div>
+
+</div>

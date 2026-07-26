@@ -1,0 +1,15 @@
+{% for p in rows %}
+{% set sub_category_name = sub_by_id.get(p.subCategoryId) %}
+{% set parent_category = None %}
+{% if p.categoryId %}{% set parent_category = {"name": cat_by_id.get(p.categoryId)} %}{% endif %}
+{% include "admin/partials/product_row.html" %}
+{% endfor %}
+
+<div class="cat-empty-state" id="productEmptyState" hx-swap-oob="true" {{ '' if not rows else 'hidden' }}>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M3 7l3-4h12l3 4"/><path d="M9 12h6"/></svg>
+  <p>No products found. Try a different search or filter.</p>
+</div>
+
+<div class="prod-pagination" id="productPagination" hx-swap-oob="true">
+  {% include "admin/partials/product_pagination.html" %}
+</div>

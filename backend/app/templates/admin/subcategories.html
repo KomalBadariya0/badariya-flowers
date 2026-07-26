@@ -1,0 +1,128 @@
+{% extends "layout/base_admin.html" %}
+{% block title %}Sub Categories{% endblock %}
+
+{% block extra_css %}
+<!-- Reuses categories.css: the migrated Sub Categories partials (row / rows /
+     form, already built) share the exact same "cat-*" design-system classes
+     as Categories, per this module's own docstring ("Mirrors
+     app/web/admin_categories.py exactly"). The dedicated sub-categories.css
+     (subcat-* classes) belongs to the old pre-migration static page at
+     /admin/sub-categories.html and is not used here. -->
+<link rel="stylesheet" href="/admin/assets/css/categories.css">
+{% endblock %}
+
+{% block content %}
+<div class="admin-page-head">
+  <div>
+    <span class="admin-breadcrumb">Admin Panel</span>
+    <h1>Sub Categories</h1>
+  </div>
+  <button class="btn btn-primary btn-icon-sm" type="button" id="openAddSubCategoryBtn"
+  hx-get="/admin/subcategories/new" hx-target="#subCategoryForm" hx-swap="innerHTML"
+  data-open-modal="subCategoryFormModal">
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+  Add Sub Category
+</button>
+</div>
+
+<!-- ============ SUB CATEGORIES TABLE CARD ============ -->
+<div class="admin-card">
+  <div class="admin-card-head cat-card-head">
+    <div>
+      <h3>All Sub Categories</h3>
+      <p>Manage the sub categories shown under each category on the customer website</p>
+    </div>
+    <div class="cat-toolbar">
+      <div class="admin-search cat-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" id="subCategorySearchInput" name="search" placeholder="Search sub categories…" autocomplete="off"
+          hx-get="/admin/subcategories/rows" hx-target="#subCategoryTableBody" hx-swap="innerHTML"
+          hx-trigger="input changed delay:200ms" hx-include="#subCategoryFilter">
+      </div>
+      <select class="cat-filter-select" id="subCategoryFilter" name="categoryId"
+        hx-get="/admin/subcategories/rows" hx-target="#subCategoryTableBody" hx-swap="innerHTML"
+        hx-trigger="change" hx-include="#subCategorySearchInput">
+        <option value="all">All Categories</option>
+        {% for c in categories %}
+        <option value="{{ c.id }}">{{ c.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Sub Category Name</th>
+          <th>Category</th>
+          <th>Slug</th>
+          <th>Total Products</th>
+          <th>Status</th>
+          <th>Created Date</th>
+          <th class="cat-th-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="subCategoryTableBody">
+        {% for sub in rows %}
+        {% set parent_category = categories | selectattr("id", "equalto", sub.categoryId) | first %}
+        {% include "admin/partials/sub_category_row.html" %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cat-empty-state" id="subCategoryEmptyState" {{ '' if not rows else 'hidden' }}>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M3 7l3-4h12l3 4"/><path d="M9 12h6"/></svg>
+    <p>No sub categories found. Try a different search or add a new sub category.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- ============ ADD / EDIT SUB CATEGORY MODAL ============ -->
+<div class="cat-modal-overlay" id="subCategoryFormModal">
+  <div class="cat-modal">
+    <div class="cat-modal-head">
+      <h3>Add Sub Category</h3>
+      <button class="cat-modal-close" type="button" aria-label="Close" data-close-modal>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <form id="subCategoryForm" novalidate onsubmit="return false;">
+      <!-- filled by /admin/subcategories/new or /admin/subcategories/{id}/edit -->
+    </form>
+  </div>
+</div>
+
+<!-- ============ VIEW SUB CATEGORY MODAL ============ -->
+<div class="cat-modal-overlay" id="subCategoryViewModal">
+  <div class="cat-modal">
+    <div class="cat-modal-head">
+      <h3>Sub Category Details</h3>
+      <button class="cat-modal-close" type="button" aria-label="Close" data-close-modal>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="cat-modal-body" id="subCategoryViewBody">
+      <!-- filled by /admin/subcategories/{id}/view -->
+    </div>
+    <div class="cat-modal-foot cat-modal-foot--center">
+      <button type="button" class="btn btn-outline btn-sm" data-close-modal>Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DELETE CONFIRM MODAL ============ -->
+<div class="cat-modal-overlay" id="subCategoryDeleteModal">
+  <div class="cat-modal cat-modal--confirm" id="subCategoryDeleteBody">
+    <!-- filled by /admin/subcategories/{id}/confirm-delete -->
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="cat-toast" id="subCategoryToast">
+  <span id="subCategoryToastMsg">Saved</span>
+</div>
+{% endblock %}

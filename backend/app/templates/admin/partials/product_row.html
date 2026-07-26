@@ -1,0 +1,53 @@
+{% set cover = p.images[0] if p.images else None %}
+<tr data-id="{{ p.id }}">
+  <td>
+    {% if cover %}
+    <img class="cat-img-cell" src="{{ cover }}" alt="{{ p.name }}">
+    {% else %}
+    <div class="cat-img-cell" style="display:flex;align-items:center;justify-content:center;color:var(--accent);">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5.5-5.5L4 21"/></svg>
+    </div>
+    {% endif %}
+  </td>
+  <td>
+    <div class="prod-name-cell"><strong>{{ p.name }}</strong><span>{{ sub_category_name or "" }}</span></div>
+  </td>
+  <td data-label="Category">{{ parent_category.name if parent_category else "—" }}</td>
+  <td data-label="Price"><span class="prod-price-cell">{{ p.priceLabel }}</span></td>
+  <td data-label="MOQ">{{ p.moq or 1 }}</td>
+  <td data-label="SKU"><span class="cat-slug-pill">{{ p.sku or "—" }}</span></td>
+  <td data-label="Status">
+    <button type="button"
+      class="admin-badge cat-status-toggle {{ 'admin-badge--success' if p.active else 'admin-badge--danger' }}"
+      hx-post="/admin/products/{{ p.id }}/toggle-status"
+      hx-target="closest tr" hx-swap="outerHTML">
+      <span class="dot"></span>{{ 'Active' if p.active else 'Inactive' }}
+    </button>
+  </td>
+  <td data-label="Featured">
+    <button type="button" class="prod-featured-star {{ 'is-featured' if p.featured }}"
+      hx-post="/admin/products/{{ p.id }}/toggle-featured"
+      hx-target="closest tr" hx-swap="outerHTML"
+      aria-label="Toggle featured">
+      <svg viewBox="0 0 24 24" fill="{{ 'currentColor' if p.featured else 'none' }}" stroke="currentColor" stroke-width="1.6"><path d="M12 2l3 6.5 7 1-5 5 1.5 7L12 18l-6.5 3.5L7 14.5l-5-5 7-1z"/></svg>
+    </button>
+  </td>
+  <td data-label="Created">{{ p.createdAt.strftime('%d %b %Y') if p.createdAt else '—' }}</td>
+  <td>
+    <div class="cat-actions-cell">
+      <button class="cat-action-btn" type="button" aria-label="View {{ p.name }}"
+        hx-get="/admin/products/{{ p.id }}/view" hx-target="#productViewBody" hx-swap="innerHTML"
+        data-open-modal="productViewModal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+      <a class="cat-action-btn" href="/admin/products/{{ p.id }}/edit" aria-label="Edit {{ p.name }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+      </a>
+      <button class="cat-action-btn is-danger" type="button" aria-label="Delete {{ p.name }}"
+        hx-get="/admin/products/{{ p.id }}/confirm-delete" hx-target="#productDeleteBody" hx-swap="innerHTML"
+        data-open-modal="productDeleteModal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+      </button>
+    </div>
+  </td>
+</tr>

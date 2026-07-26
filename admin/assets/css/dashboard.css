@@ -1,0 +1,182 @@
+/* ==========================================================================
+   BADARIYA FLOWERS — ADMIN DASHBOARD (page-specific)
+   Depends on tokens from ../../assets/css/style.css and admin.css
+   ========================================================================== */
+
+/* ============ STAT WIDGETS ============ */
+.stat-grid{
+  display:grid; grid-template-columns:repeat(2,1fr); gap:18px;
+  margin-bottom:24px;
+}
+.stat-card{
+  position:relative;
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  box-shadow:var(--shadow-soft);
+  padding:22px; overflow:hidden;
+  transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.stat-card:hover{ transform:translateY(-5px); box-shadow:var(--shadow-lift); border-color:var(--accent); }
+.stat-card-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.stat-icon{
+  width:46px; height:46px; border-radius:14px; flex:0 0 46px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(201,166,107,0.14); color:var(--primary);
+}
+.stat-icon svg{ width:22px; height:22px; }
+.stat-trend{
+  font-size:11px; font-weight:600; padding:4px 9px; border-radius:100px;
+  background:rgba(124,148,115,0.12); color:#5c6f55;
+  white-space:nowrap;
+}
+.stat-trend.is-flat{ background:rgba(201,166,107,0.14); color:#8a6a3a; }
+.stat-value{
+  font-family:var(--font-display); font-weight:700; color:var(--heading);
+  font-size:36px; line-height:1; margin-top:18px;
+}
+.stat-label{
+  margin-top:6px; font-size:12px; letter-spacing:0.3px; color:var(--text);
+}
+
+/* ============ QUICK ACTIONS ============ */
+.section-label{
+  font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  color:var(--accent); font-weight:600; margin:0 0 12px;
+}
+.quick-actions{
+  display:grid; grid-template-columns:repeat(2,1fr); gap:16px;
+  margin-bottom:28px;
+}
+.quick-action-card{
+  display:flex; align-items:center; gap:14px;
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  box-shadow:var(--shadow-soft);
+  padding:18px 20px;
+  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.quick-action-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-lift); border-color:var(--accent); }
+.quick-action-icon{
+  width:44px; height:44px; border-radius:50%; flex:0 0 44px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--heading); color:var(--accent);
+}
+.quick-action-icon svg{ width:19px; height:19px; }
+.quick-action-text{ min-width:0; }
+.quick-action-text strong{ display:block; font-size:13.5px; color:var(--heading); font-weight:600; overflow-wrap:break-word; }
+.quick-action-text span{ font-size:11.5px; color:var(--text); overflow-wrap:break-word; }
+.quick-action-arrow{ margin-left:auto; color:var(--text); flex:0 0 auto; }
+.quick-action-arrow svg{ width:16px; height:16px; }
+.quick-action-card:hover .quick-action-arrow{ color:var(--primary); }
+
+/* ============ MAIN DASHBOARD ROW: table + side column ============ */
+.dashboard-row{
+  display:grid; grid-template-columns:1fr; gap:20px;
+  align-items:start;
+}
+
+/* ---- recent products table ---- */
+/* .admin-table / .admin-table-wrap base styles now live in admin.css
+   (shared shell) since every table page — not just Dashboard — needs
+   them. table-product-cell / table-price stay here as they're only
+   used by the Dashboard's "Recent Products" widget. */
+.table-product-cell{ display:flex; align-items:center; gap:12px; }
+.table-product-cell img{
+  width:42px; height:42px; object-fit:cover; border-radius:9px;
+  border:1px solid var(--border); flex:0 0 42px;
+}
+.table-product-cell strong{ display:block; font-size:13px; color:var(--heading); font-weight:600; }
+.table-product-cell span{ font-size:11px; color:var(--text); }
+.table-price{ font-family:var(--font-display); font-weight:700; color:var(--heading); font-size:14px; }
+
+/* ---- system status ---- */
+.status-list{ display:flex; flex-direction:column; padding:8px 6px; }
+.status-row{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:12px 16px; border-radius:12px;
+}
+.status-row:hover{ background:var(--bg); }
+.status-row-left{ display:flex; align-items:center; gap:11px; }
+.status-dot{ width:9px; height:9px; border-radius:50%; flex:0 0 9px; }
+.status-dot.ok{ background:var(--success); box-shadow:0 0 0 4px rgba(124,148,115,0.16); }
+.status-dot.warn{ background:var(--warning); box-shadow:0 0 0 4px rgba(201,166,107,0.18); }
+.status-dot.down{ background:var(--danger); box-shadow:0 0 0 4px rgba(181,101,74,0.16); }
+.status-row-left strong{ display:block; font-size:12.5px; color:var(--heading); font-weight:600; }
+.status-row-left span{ font-size:11px; color:var(--text); }
+
+/* ---- recent activity feed ---- */
+.activity-list{ padding:18px 22px 6px; }
+.activity-item{ display:flex; gap:13px; position:relative; padding-bottom:22px; }
+.activity-item:last-child{ padding-bottom:0; }
+.activity-item::before{
+  content:""; position:absolute; left:14px; top:32px; bottom:0; width:1px;
+  background:var(--border);
+}
+.activity-item:last-child::before{ display:none; }
+.activity-icon{
+  width:29px; height:29px; border-radius:50%; flex:0 0 29px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(201,166,107,0.14); color:var(--primary);
+  position:relative; z-index:1;
+}
+.activity-icon svg{ width:14px; height:14px; }
+.activity-text p{ font-size:12.5px; color:var(--heading); line-height:1.5; }
+.activity-text p strong{ font-weight:600; }
+.activity-text time{ font-size:11px; color:var(--text); }
+
+/* stacked small cards share the same side column */
+.side-col{ display:flex; flex-direction:column; gap:20px; }
+
+/* ============ RESPONSIVE ============ */
+@media (min-width:640px){
+  .quick-actions{ grid-template-columns:repeat(2,1fr); }
+}
+@media (min-width:860px){
+  .stat-grid{ grid-template-columns:repeat(4,1fr); }
+}
+@media (min-width:1100px){
+  .quick-actions{ grid-template-columns:repeat(4,1fr); }
+  .dashboard-row{ grid-template-columns:1.6fr 1fr; }
+}
+/* ---- ≤768px: phones + tablet portrait — one card per row, full width,
+   no fixed widths (matches every target device from 320px to 768px) ---- */
+@media (max-width:768px){
+  .stat-grid{ grid-template-columns:1fr; gap:14px; }
+  .quick-actions{ grid-template-columns:1fr; gap:14px; }
+}
+@media (max-width:480px){
+  .activity-list{ padding:14px 16px 4px; }
+  .status-row{ padding:11px 12px; }
+  .stat-card{ padding:18px; }
+  .stat-value{ font-size:30px; margin-top:14px; }
+  .quick-action-card{ padding:16px; gap:12px; }
+}
+
+/* ---- ≤576px: Recent Products table becomes a stacked card list instead
+   of a horizontally-scrolling table — every value (Product / Category /
+   Price / Status / Added) is visible with no scrolling needed. Scoped to
+   .dashboard-row so this ONLY affects the Dashboard's table — Categories,
+   Products, etc. keep their existing .admin-table behaviour untouched. ---- */
+@media (max-width:576px){
+  .dashboard-row .admin-table-wrap{ overflow-x:visible; padding:12px 14px 4px; }
+  .dashboard-row .admin-table{ min-width:0; width:100%; }
+  .dashboard-row .admin-table thead{ display:none; }
+  .dashboard-row .admin-table, .dashboard-row .admin-table tbody,
+  .dashboard-row .admin-table tr, .dashboard-row .admin-table td{
+    display:block; width:100%;
+  }
+  .dashboard-row .admin-table tbody tr{
+    border:1px solid var(--border); border-radius:14px;
+    padding:6px 14px; margin:0 0 12px; background:var(--card);
+  }
+  .dashboard-row .admin-table tbody tr:last-child{ margin-bottom:0; }
+  .dashboard-row .admin-table tbody td{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:10px 0; border-bottom:1px solid var(--border);
+    font-size:13px; text-align:right;
+  }
+  .dashboard-row .admin-table tbody td:last-child{ border-bottom:none; }
+  .dashboard-row .admin-table tbody td::before{
+    content:attr(data-label);
+    font-size:10.5px; letter-spacing:1px; text-transform:uppercase;
+    color:var(--accent); font-weight:700; text-align:left; flex:0 0 auto;
+  }
+}

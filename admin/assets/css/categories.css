@@ -1,0 +1,390 @@
+/* ==========================================================================
+   BADARIYA FLOWERS — ADMIN · CATEGORIES (page-specific)
+   Depends on tokens from ../../assets/css/style.css and admin.css.
+   No new colors / radii / shadows are introduced here — everything below
+   reuses --bg, --card, --primary, --accent, --hover, --heading, --text,
+   --border, --radius, --shadow-soft, --shadow-lift, --success, --warning,
+   --danger and the .admin-table / .admin-badge / .btn primitives.
+   ========================================================================== */
+
+/* ============ CARD HEAD / TOOLBAR ============ */
+.cat-card-head{
+  flex-wrap:wrap; gap:16px;
+}
+.cat-toolbar{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+.cat-search{
+  max-width:280px;
+}
+.cat-filter-select{
+  appearance:none; -webkit-appearance:none;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:100px;
+  padding:9px 34px 9px 16px;
+  font-family:var(--font-body); font-size:12.5px; font-weight:500; color:var(--heading);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B625A' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat; background-position:right 12px center; background-size:14px;
+  cursor:pointer;
+  transition:border-color .2s ease;
+}
+.cat-filter-select:hover, .cat-filter-select:focus{ border-color:var(--accent); outline:none; }
+
+/* ============ TABLE CELLS (specific to categories) ============ */
+.cat-th-actions{ text-align:right !important; }
+.cat-img-cell{
+  width:46px; height:46px; object-fit:cover; border-radius:10px;
+  border:1px solid var(--border); background:var(--bg); flex:0 0 46px;
+}
+.cat-name-cell strong{ display:block; font-size:13.5px; color:var(--heading); font-weight:600; }
+.cat-slug-pill{
+  display:inline-flex; align-items:center;
+  font-family:'SFMono-Regular', Consolas, monospace;
+  font-size:11.5px; color:var(--primary);
+  background:rgba(139,94,60,0.08);
+  border-radius:6px; padding:3px 9px;
+}
+.cat-products-count{ font-family:var(--font-display); font-weight:700; color:var(--heading); font-size:14px; }
+.cat-actions-cell{ display:flex; align-items:center; justify-content:flex-end; gap:6px; }
+.cat-action-btn{
+  width:32px; height:32px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--border); background:var(--card); color:var(--text);
+  transition:all .2s ease;
+}
+.cat-action-btn svg{ width:15px; height:15px; }
+.cat-action-btn:hover{ background:var(--primary); color:#fff; border-color:var(--primary); }
+.cat-action-btn.is-danger:hover{ background:var(--danger); border-color:var(--danger); }
+
+/* status toggle rendered inside the table (click to flip active/inactive) */
+.cat-status-toggle{ cursor:pointer; border:none; }
+.cat-status-toggle:hover{ filter:brightness(0.97); }
+
+/* ============ EMPTY / LOADING STATE ============ */
+.cat-empty-state{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:10px; padding:56px 20px; text-align:center; color:var(--text);
+}
+.cat-empty-state svg{ width:34px; height:34px; color:var(--accent); opacity:0.8; }
+.cat-empty-state p{ font-size:13px; }
+
+/* skeleton row shimmer while "loading" from the dummy API */
+.cat-skeleton-bar{
+  height:12px; border-radius:6px;
+  background:linear-gradient(90deg, var(--bg) 25%, var(--border) 37%, var(--bg) 63%);
+  background-size:400% 100%;
+  animation:catShimmer 1.4s ease infinite;
+}
+@keyframes catShimmer{
+  0%{ background-position:100% 50%; }
+  100%{ background-position:0 50%; }
+}
+
+/* ============ BUTTONS: extra variant not in global style.css ============ */
+.btn-danger{
+  background:var(--danger); color:#fff; border-color:var(--danger);
+  box-shadow:0 10px 24px rgba(181,101,74,0.28);
+}
+.btn-danger:hover{ background:#9c5340; transform:translateY(-2px); }
+
+/* ============ MODAL SHELL (mirrors .search-panel / .search-box motion) ============ */
+.cat-modal-overlay{
+  position:fixed; inset:0; z-index:400;
+  background:rgba(58,44,35,0.55);
+  backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+  opacity:0; visibility:hidden;
+  transition:opacity .25s ease, visibility .25s ease;
+}
+.cat-modal-overlay.is-open{ opacity:1; visibility:visible; }
+.cat-modal{
+  width:100%; max-width:560px; max-height:90vh; overflow-y:auto;
+  background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow-lift);
+  transform:translateY(-14px); transition:transform .3s ease;
+}
+.cat-modal-overlay.is-open .cat-modal{ transform:translateY(0); }
+
+.cat-modal-head{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:20px 22px; border-bottom:1px solid var(--border);
+  position:sticky; top:0; background:var(--card); z-index:1;
+}
+.cat-modal-head h3{ font-family:var(--font-display); font-size:19px; color:var(--heading); font-weight:700; }
+.cat-modal-close{
+  width:32px; height:32px; border-radius:50%; flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text); border:1px solid var(--border); background:transparent;
+  transition:all .2s ease;
+}
+.cat-modal-close svg{ width:15px; height:15px; }
+.cat-modal-close:hover{ background:var(--heading); color:#fff; border-color:var(--heading); }
+
+.cat-modal-body{ padding:22px; }
+.cat-modal-foot{
+  display:flex; align-items:center; justify-content:flex-end; gap:10px;
+  padding:16px 22px; border-top:1px solid var(--border);
+  position:sticky; bottom:0; background:var(--card);
+}
+.cat-modal-foot--center{ justify-content:center; }
+
+/* ============ FORM FIELDS ============ */
+.cat-form-row{ display:grid; grid-template-columns:1fr; gap:16px; margin-bottom:16px; }
+.cat-form-group label{
+  display:flex; align-items:center; gap:8px;
+  font-size:12px; font-weight:600; color:var(--heading);
+  margin-bottom:7px;
+}
+.cat-form-group .req{ color:var(--danger); }
+.cat-form-group input[type="text"],
+.cat-form-group input[type="number"],
+.cat-form-group select{
+  width:100%;
+  border:1px solid var(--border); border-radius:10px;
+  padding:11px 14px;
+  font-family:var(--font-body); font-size:13.5px; color:var(--heading);
+  background:#fff;
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+.cat-form-group input:focus, .cat-form-group select:focus{
+  outline:none; border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(139,94,60,0.12);
+}
+.cat-form-group input.is-invalid, .cat-form-group select.is-invalid{
+  border-color:var(--danger);
+}
+.cat-form-group input.is-invalid:focus{ box-shadow:0 0 0 3px rgba(181,101,74,0.14); }
+.cat-field-error{
+  display:block; min-height:15px; margin-top:5px;
+  font-size:11px; color:var(--danger);
+}
+.cat-slug-auto-toggle{
+  margin-left:auto;
+  font-size:10px; font-weight:600; letter-spacing:0.4px; text-transform:uppercase;
+  padding:3px 9px; border-radius:100px;
+  border:1px solid var(--border); color:var(--text); background:transparent;
+}
+.cat-slug-auto-toggle.is-active{ background:rgba(201,166,107,0.16); color:#8a6a3a; border-color:transparent; }
+
+/* ============ IMAGE UPLOAD ============ */
+.cat-image-upload{
+  display:flex; align-items:center; gap:16px;
+  border:1.5px dashed var(--border); border-radius:14px;
+  padding:16px; cursor:pointer;
+  transition:border-color .2s ease, background .2s ease;
+}
+.cat-image-upload:hover{ border-color:var(--accent); background:rgba(201,166,107,0.05); }
+.cat-image-preview{
+  width:64px; height:64px; border-radius:12px; flex:0 0 64px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--bg); border:1px solid var(--border); color:var(--accent);
+  overflow:hidden;
+}
+.cat-image-preview svg{ width:22px; height:22px; }
+.cat-image-preview img{ width:100%; height:100%; object-fit:cover; }
+.cat-image-upload-text strong{ display:block; font-size:13px; color:var(--heading); font-weight:600; }
+.cat-image-upload-text span{ font-size:11.5px; color:var(--text); }
+
+/* ============ VIEW MODAL ============ */
+.cat-view-head{ display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+.cat-view-head img{
+  width:72px; height:72px; object-fit:cover; border-radius:14px;
+  border:1px solid var(--border);
+}
+.cat-view-head h4{ font-family:var(--font-display); font-size:19px; color:var(--heading); font-weight:700; }
+.cat-view-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:14px;
+}
+.cat-view-field{
+  background:var(--bg); border:1px solid var(--border); border-radius:12px;
+  padding:12px 14px;
+}
+.cat-view-field span{ display:block; font-size:10.5px; letter-spacing:1px; text-transform:uppercase; color:var(--accent); font-weight:600; margin-bottom:4px; }
+.cat-view-field strong{ font-size:13.5px; color:var(--heading); font-weight:600; }
+
+/* ============ DELETE CONFIRM ============ */
+.cat-modal--confirm{ max-width:420px; text-align:center; padding:32px 26px 26px; }
+.cat-confirm-icon{
+  width:56px; height:56px; border-radius:50%; margin:0 auto 16px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(181,101,74,0.12); color:var(--danger);
+}
+.cat-confirm-icon svg{ width:24px; height:24px; }
+.cat-modal--confirm h3{ font-family:var(--font-display); font-size:19px; color:var(--heading); font-weight:700; margin-bottom:8px; }
+.cat-modal--confirm p{ font-size:13px; color:var(--text); line-height:1.6; }
+.cat-modal--confirm p strong{ color:var(--heading); }
+.cat-modal--confirm .cat-modal-foot{ border-top:none; padding:22px 0 0; }
+
+/* ============ TOAST ============ */
+.cat-toast{
+  position:fixed; bottom:26px; right:26px; z-index:500;
+  display:flex; align-items:center; gap:10px;
+  background:var(--heading); color:#fff;
+  padding:13px 20px; border-radius:12px; box-shadow:var(--shadow-lift);
+  font-size:13px; font-weight:500;
+  transform:translateY(16px); opacity:0; visibility:hidden;
+  transition:all .3s ease;
+}
+.cat-toast.is-open{ transform:translateY(0); opacity:1; visibility:visible; }
+.cat-toast.is-error{ background:var(--danger); }
+.cat-toast.is-success{ background:#5c6f55; }
+
+/* ============ RESPONSIVE ============ */
+@media (min-width:560px){
+  .cat-form-row{ grid-template-columns:1fr 1fr; }
+}
+@media (min-width:640px){
+  .cat-view-grid{ grid-template-columns:1fr 1fr; }
+}
+@media (max-width:640px){
+  .cat-card-head{ flex-direction:column; align-items:stretch; }
+  .cat-toolbar{ width:100%; }
+  .cat-search{ max-width:none; flex:1; }
+  .cat-filter-select{ flex:0 0 auto; }
+  .cat-view-grid{ grid-template-columns:1fr; }
+  .admin-page-head{ flex-direction:column; align-items:stretch; }
+  #openAddCategoryBtn{ width:100%; }
+
+  /* modal: ~95% viewport width, comfortably scrollable, buttons stack */
+  .cat-modal-overlay{ padding:10px; align-items:flex-start; padding-top:24px; }
+  .cat-modal{ max-width:none; width:100%; max-height:calc(100vh - 48px); }
+  .cat-modal-body{ padding:16px; }
+  .cat-modal-head{ padding:16px; }
+  .cat-modal-foot{
+    flex-wrap:wrap; padding:14px 16px;
+  }
+  .cat-modal-foot .btn,
+  .cat-modal-foot button{ flex:1 1 auto; min-width:0; }
+  .cat-image-upload{ flex-direction:column; align-items:flex-start; text-align:left; }
+
+  .cat-toast{ left:14px; right:14px; bottom:16px; }
+}
+@media (max-width:420px){
+  .cat-toolbar{ flex-direction:column; align-items:stretch; }
+  .cat-filter-select{ width:100%; }
+  .cat-view-head{ flex-direction:column; align-items:flex-start; gap:10px; }
+}
+
+/* ---- ≤640px: Categories table becomes stacked cards instead of a
+   horizontally-scrolling table. Image + Name sit side by side as a card
+   header; Slug / Total Products / Status / Created Date each show as a
+   labelled row; Actions sit on their own row at the bottom. Every value
+   stays visible with no horizontal scrolling needed. Scoped strictly to
+   body[data-admin-page="categories"] so Dashboard / Products / Sub
+   Categories keep their own .admin-table behaviour untouched. ---- */
+@media (max-width:640px){
+  body[data-admin-page="categories"] .admin-table-wrap{ overflow-x:visible; padding:12px 14px 4px; }
+  body[data-admin-page="categories"] .admin-table{ min-width:0; width:100%; }
+  body[data-admin-page="categories"] .admin-table thead{ display:none; }
+  body[data-admin-page="categories"] .admin-table,
+  body[data-admin-page="categories"] .admin-table tbody,
+  body[data-admin-page="categories"] .admin-table tr{ display:block; width:100%; }
+
+  body[data-admin-page="categories"] .admin-table tbody tr{
+    display:flex; flex-wrap:wrap; align-items:center;
+    border:1px solid var(--border); border-radius:14px;
+    padding:14px; margin:0 0 12px; background:var(--card);
+  }
+  body[data-admin-page="categories"] .admin-table tbody tr:last-child{ margin-bottom:0; }
+
+  body[data-admin-page="categories"] .admin-table tbody td{ padding:0; border:none; }
+
+  /* header: image (col 1) + name (col 2) sit side by side */
+  body[data-admin-page="categories"] .admin-table tbody td:nth-child(1){
+    order:1; flex:0 0 auto;
+  }
+  body[data-admin-page="categories"] .admin-table tbody td:nth-child(2){
+    order:2; flex:1 1 auto; min-width:0; padding-left:12px;
+  }
+
+  /* Slug / Total Products / Status / Created Date: full-width labelled rows */
+  body[data-admin-page="categories"] .admin-table tbody td:nth-child(3),
+  body[data-admin-page="categories"] .admin-table tbody td:nth-child(4),
+  body[data-admin-page="categories"] .admin-table tbody td:nth-child(5),
+  body[data-admin-page="categories"] .admin-table tbody td:nth-child(6){
+    order:3; flex:1 1 100%;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding-top:10px; margin-top:10px; border-top:1px solid var(--border);
+    font-size:13px;
+  }
+  body[data-admin-page="categories"] .admin-table tbody td:nth-child(3)::before,
+  body[data-admin-page="categories"] .admin-table tbody td:nth-child(4)::before,
+  body[data-admin-page="categories"] .admin-table tbody td:nth-child(5)::before,
+  body[data-admin-page="categories"] .admin-table tbody td:nth-child(6)::before{
+    content:attr(data-label);
+    font-size:10.5px; letter-spacing:1px; text-transform:uppercase;
+    color:var(--accent); font-weight:700; flex:0 0 auto;
+  }
+
+  /* Actions: full-width row at the bottom, buttons spread out */
+  body[data-admin-page="categories"] .admin-table tbody td:nth-child(7){
+    order:4; flex:1 1 100%;
+    padding-top:12px; margin-top:12px; border-top:1px solid var(--border);
+  }
+  body[data-admin-page="categories"] .cat-actions-cell{ justify-content:flex-start; gap:10px; }
+  body[data-admin-page="categories"] .cat-action-btn{ width:38px; height:38px; }
+}
+
+
+/* ---- ≤640px: Sub Categories table becomes stacked cards, same technique
+   as Categories but with the extra "Category" column. Image + Name sit
+   side by side as a card header; Category / Slug / Total Products /
+   Status / Created Date each show as a labelled row; Actions sit on
+   their own row at the bottom. Scoped strictly to
+   body[data-admin-page="subcategories"] — this page reuses categories.css
+   but must not affect Categories/Dashboard/other pages that also do. ---- */
+   @media (max-width:640px){
+    body[data-admin-page="subcategories"] .admin-table-wrap{ overflow-x:visible; padding:12px 14px 4px; }
+    body[data-admin-page="subcategories"] .admin-table{ min-width:0; width:100%; }
+    body[data-admin-page="subcategories"] .admin-table thead{ display:none; }
+    body[data-admin-page="subcategories"] .admin-table,
+    body[data-admin-page="subcategories"] .admin-table tbody,
+    body[data-admin-page="subcategories"] .admin-table tr{ display:block; width:100%; }
+  
+    body[data-admin-page="subcategories"] .admin-table tbody tr{
+      display:flex; flex-wrap:wrap; align-items:center;
+      border:1px solid var(--border); border-radius:14px;
+      padding:14px; margin:0 0 12px; background:var(--card);
+    }
+    body[data-admin-page="subcategories"] .admin-table tbody tr:last-child{ margin-bottom:0; }
+  
+    body[data-admin-page="subcategories"] .admin-table tbody td{ padding:0; border:none; }
+  
+    /* header: image (col 1) + name (col 2) sit side by side */
+    body[data-admin-page="subcategories"] .admin-table tbody td:nth-child(1){
+      order:1; flex:0 0 auto;
+    }
+    body[data-admin-page="subcategories"] .admin-table tbody td:nth-child(2){
+      order:2; flex:1 1 auto; min-width:0; padding-left:12px;
+    }
+  
+    /* Category / Slug / Total Products / Status / Created Date: labelled rows */
+    body[data-admin-page="subcategories"] .admin-table tbody td:nth-child(3),
+    body[data-admin-page="subcategories"] .admin-table tbody td:nth-child(4),
+    body[data-admin-page="subcategories"] .admin-table tbody td:nth-child(5),
+    body[data-admin-page="subcategories"] .admin-table tbody td:nth-child(6),
+    body[data-admin-page="subcategories"] .admin-table tbody td:nth-child(7){
+      order:3; flex:1 1 100%;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding-top:10px; margin-top:10px; border-top:1px solid var(--border);
+      font-size:13px;
+    }
+    body[data-admin-page="subcategories"] .admin-table tbody td:nth-child(3)::before,
+    body[data-admin-page="subcategories"] .admin-table tbody td:nth-child(4)::before,
+    body[data-admin-page="subcategories"] .admin-table tbody td:nth-child(5)::before,
+    body[data-admin-page="subcategories"] .admin-table tbody td:nth-child(6)::before,
+    body[data-admin-page="subcategories"] .admin-table tbody td:nth-child(7)::before{
+      content:attr(data-label);
+      font-size:10.5px; letter-spacing:1px; text-transform:uppercase;
+      color:var(--accent); font-weight:700; flex:0 0 auto;
+    }
+  
+    /* Actions: full-width row at the bottom, buttons spread out */
+    body[data-admin-page="subcategories"] .admin-table tbody td:nth-child(8){
+      order:4; flex:1 1 100%;
+      padding-top:12px; margin-top:12px; border-top:1px solid var(--border);
+    }
+    body[data-admin-page="subcategories"] .cat-actions-cell{ justify-content:flex-start; gap:10px; }
+    body[data-admin-page="subcategories"] .cat-action-btn{ width:38px; height:38px; }
+  }

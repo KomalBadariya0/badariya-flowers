@@ -1,0 +1,37 @@
+<div class="cat-modal-body">
+  <div class="cat-form-row">
+    <div class="cat-form-group">
+      <label for="catalogueTitle">Title <span class="req">*</span></label>
+      <input type="text" id="catalogueTitle" name="title" placeholder="e.g. Badariya Flowers — Full Catalogue" autocomplete="off"
+        value="{{ title_value }}">
+    </div>
+  </div>
+
+  <div class="cat-form-row">
+    <div class="cat-form-group">
+      <label>PDF File <span class="req">*</span></label>
+      <div class="cat-image-upload" id="catalogueFileDrop" onclick="document.getElementById('catalogueFileInput').click();">
+        <div class="cat-image-preview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>
+        </div>
+        <div class="cat-image-upload-text">
+          <strong id="catalogueFileNameText">{{ 'Replace the existing PDF' if is_replace else 'Choose a PDF file' }}</strong>
+          <span>PDF only, up to 20MB</span>
+        </div>
+        <input type="file" id="catalogueFileInput" name="file" accept="application/pdf" required
+          onchange="document.getElementById('catalogueFileNameText').textContent = this.files[0] ? this.files[0].name : '{{ 'Replace the existing PDF' if is_replace else 'Choose a PDF file' }}';">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cat-modal-foot">
+  <button type="button" class="btn btn-outline btn-sm" data-close-modal>Cancel</button>
+  <button type="button" class="btn btn-primary btn-sm" id="catalogueUploadSave"
+    hx-post="{{ action_url }}" hx-target="#catalogueContent" hx-swap="outerHTML"
+    hx-encoding="multipart/form-data" hx-include="closest form"
+    hx-indicator="#catalogueUploadingNote">
+    {{ 'Replace PDF' if is_replace else 'Upload PDF' }}
+  </button>
+  <span id="catalogueUploadingNote" class="htmx-indicator" style="color:var(--accent);font-weight:600;font-size:12px;">Uploading…</span>
+</div>

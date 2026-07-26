@@ -1,0 +1,477 @@
+{% set v = form_values or {} %}
+{% set website_name_val = v.get('websiteName', s.websiteName) %}
+{% set tagline_val = v.get('tagline', s.tagline or '') %}
+{% set logo_val = v.get('logo', s.logo or '') %}
+{% set favicon_val = v.get('favicon', s.favicon or '') %}
+{% set business_email_val = v.get('businessEmail', s.businessEmail or '') %}
+{% set mobile_number_val = v.get('mobileNumber', s.mobileNumber or '') %}
+{% set whatsapp_number_val = v.get('whatsappNumber', s.whatsappNumber or '') %}
+{% set address_val = v.get('address', s.address or '') %}
+{% set city_val = v.get('city', s.city or '') %}
+{% set state_val = v.get('state', s.state or '') %}
+{% set country_val = v.get('country', s.country or '') %}
+{% set pincode_val = v.get('pincode', s.pincode or '') %}
+{% set map_link_val = v.get('mapLink', s.mapLink or '') %}
+{% set google_maps_embed_val = v.get('googleMapsEmbed', s.googleMapsEmbed or '') %}
+{% set business_hours_val = v.get('businessHours', s.businessHours or '') %}
+{% set facebook_val = v.get('facebook', s.facebook or '') %}
+{% set instagram_val = v.get('instagram', s.instagram or '') %}
+{% set youtube_val = v.get('youtube', s.youtube or '') %}
+{% set twitter_val = v.get('twitter', s.twitter or '') %}
+{% set pinterest_val = v.get('pinterest', s.pinterest or '') %}
+{% set footer_copyright_val = v.get('footerCopyright', s.footerCopyright or '') %}
+
+{% set meta_title_val = v.get('metaTitle', s.metaTitle or '') %}
+{% set meta_description_val = v.get('metaDescription', s.metaDescription or '') %}
+{% set meta_keywords_val = v.get('metaKeywords', s.metaKeywords or '') %}
+{% set og_image_val = v.get('ogImage', s.ogImage or '') %}
+{% set ga_id_val = v.get('googleAnalyticsId', s.googleAnalyticsId or '') %}
+{% set fb_pixel_val = v.get('facebookPixelId', s.facebookPixelId or '') %}
+{% set robots_txt_val = v.get('robotsTxt', s.robotsTxt or 'index, follow') %}
+{% set canonical_url_val = v.get('canonicalUrl', s.canonicalUrl or '') %}
+
+{% set hero_title_val = v.get('heroTitle', s.heroTitle or '') %}
+{% set hero_subtitle_val = v.get('heroSubtitle', s.heroSubtitle or '') %}
+{% set hero_button_text_val = v.get('heroButtonText', s.heroButtonText or '') %}
+{% set hero_button_link_val = v.get('heroButtonLink', s.heroButtonLink or '') %}
+{% set hero_bg_image_val = v.get('heroBgImage', s.heroBgImage or '') %}
+
+{% set support_email_val = v.get('supportEmail', s.supportEmail or '') %}
+{% set support_phone_val = v.get('supportPhone', s.supportPhone or '') %}
+
+{% set website_status_val = v.get('websiteStatus', s.websiteStatus) %}
+{% set maintenance_mode_val = v.get('maintenanceMode', s.maintenanceMode) %}
+{% set currency_val = v.get('currency', s.currency) %}
+{% set language_val = v.get('language', s.language) %}
+{% set products_per_page_val = v.get('productsPerPage', s.productsPerPage) %}
+{% set default_wa_message_val = v.get('defaultWaMessage', s.defaultWaMessage or '') %}
+
+<div class="prod-tabs" role="tablist">
+  <button type="button" class="prod-tab-btn is-active" data-prod-tab="general">General</button>
+  <button type="button" class="prod-tab-btn" data-prod-tab="seo">SEO</button>
+  <button type="button" class="prod-tab-btn" data-prod-tab="homepage">Homepage</button>
+  <button type="button" class="prod-tab-btn" data-prod-tab="contact">Contact</button>
+  <button type="button" class="prod-tab-btn" data-prod-tab="advanced">Advanced</button>
+</div>
+
+<!-- ============ TAB: GENERAL ============ -->
+<div class="prod-tab-panel is-active" data-prod-panel="general">
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsWebsiteName">Store Name <span class="req">*</span></label>
+      <input type="text" id="settingsWebsiteName" name="websiteName" placeholder="e.g. Badariya Flowers" autocomplete="off"
+        value="{{ website_name_val }}" class="{{ 'is-invalid' if errors.get('websiteName') }}">
+      <span class="set-field-error">{{ errors.get('websiteName', '') }}</span>
+    </div>
+    <div class="set-form-group">
+      <label for="settingsTagline">Store Tagline</label>
+      <input type="text" id="settingsTagline" name="tagline" placeholder="e.g. Fresh flowers, every occasion" autocomplete="off"
+        value="{{ tagline_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label>Logo</label>
+      <div class="set-image-upload" id="logoDrop" onclick="document.getElementById('logoInput').click();">
+        <div class="set-image-preview" id="settingsLogoPreview">
+          {% if logo_val %}
+          <img src="{{ logo_val }}" alt="Logo preview">
+          {% else %}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5.5-5.5L4 21"/></svg>
+          {% endif %}
+        </div>
+        <div class="set-image-upload-text">
+          <strong>Upload website logo</strong>
+          <span>PNG or JPG, up to 2MB</span>
+          <span id="settingsLogoUploadingNote" class="htmx-indicator" style="color:var(--accent);font-weight:600;">Uploading…</span>
+        </div>
+        <input type="file" id="logoInput" name="file" accept="image/png,image/jpeg" hidden
+          hx-post="/admin/settings/upload-logo" hx-trigger="change" hx-target="#settingsLogoPreview"
+          hx-swap="innerHTML" hx-encoding="multipart/form-data"
+          hx-disabled-elt="#settingsFormSave" hx-indicator="#settingsLogoUploadingNote">
+      </div>
+      <input type="hidden" id="settingsLogoValue" name="logo" value="{{ logo_val }}">
+    </div>
+    <div class="set-form-group">
+      <label>Favicon</label>
+      <div class="set-image-upload set-image-upload--sm" id="faviconDrop" onclick="document.getElementById('faviconInput').click();">
+        <div class="set-image-preview set-image-preview--sm" id="settingsFaviconPreview">
+          {% if favicon_val %}
+          <img src="{{ favicon_val }}" alt="Favicon preview">
+          {% else %}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5.5-5.5L4 21"/></svg>
+          {% endif %}
+        </div>
+        <div class="set-image-upload-text">
+          <strong>Upload favicon</strong>
+          <span>PNG or ICO, up to 512KB</span>
+          <span id="settingsFaviconUploadingNote" class="htmx-indicator" style="color:var(--accent);font-weight:600;">Uploading…</span>
+        </div>
+        <input type="file" id="faviconInput" name="file" accept="image/png,image/x-icon,.ico" hidden
+          hx-post="/admin/settings/upload-favicon" hx-trigger="change" hx-target="#settingsFaviconPreview"
+          hx-swap="innerHTML" hx-encoding="multipart/form-data"
+          hx-disabled-elt="#settingsFormSave" hx-indicator="#settingsFaviconUploadingNote">
+      </div>
+      <input type="hidden" id="settingsFaviconValue" name="favicon" value="{{ favicon_val }}">
+    </div>
+  </div>
+
+  <div class="set-divider"><span>Contact &amp; Location</span></div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsBusinessEmail">Store Email</label>
+      <input type="text" id="settingsBusinessEmail" name="businessEmail" placeholder="e.g. info@badariyaflowers.com" autocomplete="off"
+        value="{{ business_email_val }}" class="{{ 'is-invalid' if errors.get('businessEmail') }}">
+      <span class="set-field-error">{{ errors.get('businessEmail', '') }}</span>
+    </div>
+    <div class="set-form-group">
+      <label for="settingsMobileNumber">Store Phone</label>
+      <input type="text" id="settingsMobileNumber" name="mobileNumber" placeholder="e.g. +91 96678 57709" autocomplete="off" inputmode="tel"
+        value="{{ mobile_number_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsWhatsappNumber">WhatsApp Number</label>
+      <input type="text" id="settingsWhatsappNumber" name="whatsappNumber" placeholder="e.g. 919667857709" autocomplete="off" inputmode="tel"
+        value="{{ whatsapp_number_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label for="settingsAddress">Store Address</label>
+      <textarea id="settingsAddress" name="address" rows="2" placeholder="Shop / street address">{{ address_val }}</textarea>
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsCity">City</label>
+      <input type="text" id="settingsCity" name="city" placeholder="e.g. Jaipur" autocomplete="off" value="{{ city_val }}">
+    </div>
+    <div class="set-form-group">
+      <label for="settingsState">State</label>
+      <input type="text" id="settingsState" name="state" placeholder="e.g. Rajasthan" autocomplete="off" value="{{ state_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsCountry">Country</label>
+      <input type="text" id="settingsCountry" name="country" placeholder="e.g. India" autocomplete="off" value="{{ country_val }}">
+    </div>
+    <div class="set-form-group">
+      <label for="settingsPincode">Pincode</label>
+      <input type="text" id="settingsPincode" name="pincode" placeholder="e.g. 302001" autocomplete="off" inputmode="numeric" value="{{ pincode_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label for="settingsMapLink">Google Maps Link</label>
+      <input type="text" id="settingsMapLink" name="mapLink" placeholder="https://maps.google.com/…" autocomplete="off"
+        value="{{ map_link_val }}" data-set-map-source>
+      <span class="set-hint">Paste the plain Google Maps share link (Google Maps → Share → Copy link). Used for the "View on Google Maps" button.</span>
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label for="settingsGoogleMapsEmbed">Google Maps Embed</label>
+      <textarea id="settingsGoogleMapsEmbed" name="googleMapsEmbed" rows="3" placeholder="Paste the Google Maps embed iframe / URL"
+        data-set-map-source>{{ google_maps_embed_val }}</textarea>
+      <span class="set-hint">Paste the "Embed a map" code from Google Maps — shown on the customer site's Contact page. If you only have a plain link, the Google Maps Link field above is enough.</span>
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label>Map Preview</label>
+      <div class="set-map-preview" id="settingsMapPreview">
+        <iframe id="settingsMapFrame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Location map preview"></iframe>
+        <div class="set-map-preview-empty" id="settingsMapPreviewEmpty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <span>Enter a Google Maps link or embed code above to preview the map here.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label for="settingsBusinessHours">Business Hours</label>
+      <textarea id="settingsBusinessHours" name="businessHours" rows="2" placeholder="e.g. Mon–Sat: 10:00 AM – 8:00 PM">{{ business_hours_val }}</textarea>
+    </div>
+  </div>
+
+  <div class="set-divider"><span>Social Links</span></div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsFacebook">Facebook URL</label>
+      <input type="text" id="settingsFacebook" name="facebook" placeholder="https://facebook.com/…" autocomplete="off" value="{{ facebook_val }}">
+    </div>
+    <div class="set-form-group">
+      <label for="settingsInstagram">Instagram URL</label>
+      <input type="text" id="settingsInstagram" name="instagram" placeholder="https://instagram.com/…" autocomplete="off" value="{{ instagram_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsYoutube">YouTube URL</label>
+      <input type="text" id="settingsYoutube" name="youtube" placeholder="https://youtube.com/…" autocomplete="off" value="{{ youtube_val }}">
+    </div>
+    <div class="set-form-group">
+      <label for="settingsTwitter">Twitter URL</label>
+      <input type="text" id="settingsTwitter" name="twitter" placeholder="https://twitter.com/…" autocomplete="off" value="{{ twitter_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsPinterest">Pinterest URL</label>
+      <input type="text" id="settingsPinterest" name="pinterest" placeholder="https://pinterest.com/…" autocomplete="off" value="{{ pinterest_val }}">
+    </div>
+  </div>
+
+  <div class="set-divider"><span>Footer</span></div>
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label for="settingsFooterCopyright">Footer Copyright</label>
+      <input type="text" id="settingsFooterCopyright" name="footerCopyright" placeholder="© 2026 Badariya Flowers. All Rights Reserved." autocomplete="off"
+        value="{{ footer_copyright_val }}">
+    </div>
+  </div>
+</div>
+
+<!-- ============ TAB: SEO ============ -->
+<div class="prod-tab-panel" data-prod-panel="seo">
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label for="settingsMetaTitle">Meta Title</label>
+      <input type="text" id="settingsMetaTitle" name="metaTitle" placeholder="e.g. Badariya Flowers — Toran, Garlands &amp; Decor" autocomplete="off"
+        value="{{ meta_title_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label for="settingsMetaDescription">Meta Description</label>
+      <textarea id="settingsMetaDescription" name="metaDescription" rows="3" placeholder="Shown under the title in search results">{{ meta_description_val }}</textarea>
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label for="settingsMetaKeywords">Meta Keywords</label>
+      <input type="text" id="settingsMetaKeywords" name="metaKeywords" placeholder="e.g. toran, garlands, wedding decor" autocomplete="off"
+        value="{{ meta_keywords_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label>OG Image</label>
+      <div class="set-image-upload" id="ogImageDrop" onclick="document.getElementById('ogImageInput').click();">
+        <div class="set-image-preview" id="settingsOgImagePreview">
+          {% if og_image_val %}
+          <img src="{{ og_image_val }}" alt="OG image preview">
+          {% else %}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5.5-5.5L4 21"/></svg>
+          {% endif %}
+        </div>
+        <div class="set-image-upload-text">
+          <strong>Upload social share image</strong>
+          <span>PNG or JPG, up to 2MB — shown when the site is shared on social media</span>
+          <span id="settingsOgImageUploadingNote" class="htmx-indicator" style="color:var(--accent);font-weight:600;">Uploading…</span>
+        </div>
+        <input type="file" id="ogImageInput" name="file" accept="image/png,image/jpeg" hidden
+          hx-post="/admin/settings/upload-og-image" hx-trigger="change" hx-target="#settingsOgImagePreview"
+          hx-swap="innerHTML" hx-encoding="multipart/form-data"
+          hx-disabled-elt="#settingsFormSave" hx-indicator="#settingsOgImageUploadingNote">
+      </div>
+      <input type="hidden" id="settingsOgImageValue" name="ogImage" value="{{ og_image_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsGaId">Google Analytics ID</label>
+      <input type="text" id="settingsGaId" name="googleAnalyticsId" placeholder="e.g. G-XXXXXXXXXX" autocomplete="off" value="{{ ga_id_val }}">
+    </div>
+    <div class="set-form-group">
+      <label for="settingsFbPixel">Facebook Pixel ID</label>
+      <input type="text" id="settingsFbPixel" name="facebookPixelId" placeholder="e.g. 1234567890123456" autocomplete="off" value="{{ fb_pixel_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsRobotsTxt">Robots.txt Option</label>
+      <select id="settingsRobotsTxt" name="robotsTxt">
+        <option value="index, follow" {{ 'selected' if robots_txt_val == 'index, follow' }}>index, follow — allow search engines</option>
+        <option value="noindex, nofollow" {{ 'selected' if robots_txt_val == 'noindex, nofollow' }}>noindex, nofollow — hide from search engines</option>
+        <option value="index, nofollow" {{ 'selected' if robots_txt_val == 'index, nofollow' }}>index, nofollow</option>
+        <option value="noindex, follow" {{ 'selected' if robots_txt_val == 'noindex, follow' }}>noindex, follow</option>
+      </select>
+      <span class="set-field-error">{{ errors.get('robotsTxt', '') }}</span>
+    </div>
+    <div class="set-form-group">
+      <label for="settingsCanonicalUrl">Canonical URL</label>
+      <input type="text" id="settingsCanonicalUrl" name="canonicalUrl" placeholder="https://badariyaflowers.com" autocomplete="off" value="{{ canonical_url_val }}">
+    </div>
+  </div>
+</div>
+
+<!-- ============ TAB: HOMEPAGE ============ -->
+<div class="prod-tab-panel" data-prod-panel="homepage">
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label for="settingsHeroTitle">Hero Title</label>
+      <input type="text" id="settingsHeroTitle" name="heroTitle" placeholder="e.g. Fresh Florals For Every Celebration" autocomplete="off"
+        value="{{ hero_title_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label for="settingsHeroSubtitle">Hero Subtitle</label>
+      <textarea id="settingsHeroSubtitle" name="heroSubtitle" rows="2" placeholder="Short line shown under the hero title">{{ hero_subtitle_val }}</textarea>
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsHeroButtonText">Hero Button Text</label>
+      <input type="text" id="settingsHeroButtonText" name="heroButtonText" placeholder="e.g. Shop Now" autocomplete="off" value="{{ hero_button_text_val }}">
+    </div>
+    <div class="set-form-group">
+      <label for="settingsHeroButtonLink">Hero Button Link</label>
+      <input type="text" id="settingsHeroButtonLink" name="heroButtonLink" placeholder="e.g. /products.html" autocomplete="off" value="{{ hero_button_link_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label>Hero Background Image</label>
+      <div class="set-image-upload" id="heroBgDrop" onclick="document.getElementById('heroBgInput').click();">
+        <div class="set-image-preview" id="settingsHeroBgPreview">
+          {% if hero_bg_image_val %}
+          <img src="{{ hero_bg_image_val }}" alt="Hero background preview">
+          {% else %}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5.5-5.5L4 21"/></svg>
+          {% endif %}
+        </div>
+        <div class="set-image-upload-text">
+          <strong>Upload hero background image</strong>
+          <span>PNG or JPG, up to 3MB</span>
+          <span id="settingsHeroBgUploadingNote" class="htmx-indicator" style="color:var(--accent);font-weight:600;">Uploading…</span>
+        </div>
+        <input type="file" id="heroBgInput" name="file" accept="image/png,image/jpeg" hidden
+          hx-post="/admin/settings/upload-hero-image" hx-trigger="change" hx-target="#settingsHeroBgPreview"
+          hx-swap="innerHTML" hx-encoding="multipart/form-data"
+          hx-disabled-elt="#settingsFormSave" hx-indicator="#settingsHeroBgUploadingNote">
+      </div>
+      <input type="hidden" id="settingsHeroBgValue" name="heroBgImage" value="{{ hero_bg_image_val }}">
+    </div>
+  </div>
+</div>
+
+<!-- ============ TAB: CONTACT ============ -->
+<div class="prod-tab-panel" data-prod-panel="contact">
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsSupportEmail">Support Email</label>
+      <input type="text" id="settingsSupportEmail" name="supportEmail" placeholder="e.g. support@badariyaflowers.com" autocomplete="off"
+        value="{{ support_email_val }}" class="{{ 'is-invalid' if errors.get('supportEmail') }}">
+      <span class="set-field-error">{{ errors.get('supportEmail', '') }}</span>
+    </div>
+    <div class="set-form-group">
+      <label for="settingsSupportPhone">Support Phone</label>
+      <input type="text" id="settingsSupportPhone" name="supportPhone" placeholder="e.g. +91 96678 57709" autocomplete="off" inputmode="tel"
+        value="{{ support_phone_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsContactWhatsapp">WhatsApp</label>
+      <input type="text" id="settingsContactWhatsapp" name="whatsappNumber" placeholder="e.g. 919667857709" autocomplete="off" inputmode="tel"
+        value="{{ whatsapp_number_val }}">
+      <span class="set-hint">Same number as WhatsApp Number in the General tab.</span>
+    </div>
+    <div class="set-form-group">
+      <label for="settingsWorkingHours">Working Hours</label>
+      <input type="text" id="settingsWorkingHours" name="businessHours" placeholder="e.g. Mon–Sat: 10:00 AM – 8:00 PM" autocomplete="off"
+        value="{{ business_hours_val }}">
+      <span class="set-hint">Same as Business Hours in the General tab.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TAB: ADVANCED ============ -->
+<div class="prod-tab-panel" data-prod-panel="advanced">
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsWebsiteStatus">Website Status</label>
+      <select id="settingsWebsiteStatus" name="websiteStatus">
+        <option value="active" {{ 'selected' if website_status_val == 'active' }}>Active — visible to customers</option>
+        <option value="inactive" {{ 'selected' if website_status_val == 'inactive' }}>Inactive — hidden</option>
+      </select>
+    </div>
+    <div class="set-form-group set-form-group--toggle">
+      <label for="settingsMaintenanceMode">Maintenance Mode</label>
+      <label class="set-toggle">
+        <input type="checkbox" id="settingsMaintenanceMode" name="maintenanceMode" {{ 'checked' if maintenance_mode_val }}>
+        <span class="set-toggle-track"><span class="set-toggle-thumb"></span></span>
+        <span class="set-toggle-label">{{ 'On' if maintenance_mode_val else 'Off' }}</span>
+      </label>
+      <span class="set-hint">Shows a "we'll be back soon" page to customers while you update the catalogue.</span>
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsCurrency">Currency</label>
+      <input type="text" id="settingsCurrency" name="currency" placeholder="e.g. INR" autocomplete="off" value="{{ currency_val }}">
+    </div>
+    <div class="set-form-group">
+      <label for="settingsLanguage">Language</label>
+      <input type="text" id="settingsLanguage" name="language" placeholder="e.g. en" autocomplete="off" value="{{ language_val }}">
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsProductsPerPage">Products Per Page</label>
+      <input type="number" id="settingsProductsPerPage" name="productsPerPage" min="4" max="96" step="1"
+        value="{{ products_per_page_val }}" class="{{ 'is-invalid' if errors.get('productsPerPage') }}">
+      <span class="set-field-error">{{ errors.get('productsPerPage', '') }}</span>
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label for="settingsDefaultWaMessage">Default WhatsApp Message</label>
+      <textarea id="settingsDefaultWaMessage" name="defaultWaMessage" rows="2" placeholder="e.g. Hi, I'm interested in this product">{{ default_wa_message_val }}</textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SAVE ============ -->
+<div class="set-actions-bar">
+  <button type="button" class="btn btn-primary btn-sm" id="settingsFormSave"
+    hx-post="/admin/settings" hx-target="#settingsFormFields" hx-swap="outerHTML"
+    hx-include="closest form">Save Settings</button>
+</div>

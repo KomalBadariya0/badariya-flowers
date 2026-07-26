@@ -1,0 +1,118 @@
+{% extends "layout/base_admin.html" %}
+{% block title %}Categories{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/admin/assets/css/categories.css">
+{% endblock %}
+
+{% block content %}
+<div class="admin-page-head">
+  <div>
+    <span class="admin-breadcrumb">Admin Panel</span>
+    <h1>Categories</h1>
+  </div>
+  <button class="btn btn-primary btn-icon-sm" type="button" id="openAddCategoryBtn"
+    hx-get="/admin/categories/new" hx-target="#categoryForm" hx-swap="innerHTML"
+    data-open-modal="categoryFormModal">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>    Add Category
+  </button>
+</div>
+
+<!-- ============ CATEGORIES TABLE CARD ============ -->
+<div class="admin-card">
+  <div class="admin-card-head cat-card-head">
+    <div>
+      <h3>All Categories</h3>
+      <p>Manage the categories shown on the customer website</p>
+    </div>
+    <div class="cat-toolbar">
+      <div class="admin-search cat-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" id="categorySearchInput" name="search" placeholder="Search categories…" autocomplete="off"
+          hx-get="/admin/categories/rows" hx-target="#categoryTableBody" hx-swap="innerHTML"
+          hx-trigger="input changed delay:200ms" hx-include="#categoryStatusFilter">
+      </div>
+      <select class="cat-filter-select" id="categoryStatusFilter" name="status"
+        hx-get="/admin/categories/rows" hx-target="#categoryTableBody" hx-swap="innerHTML"
+        hx-trigger="change" hx-include="#categorySearchInput">
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Category Name</th>
+          <th>Slug</th>
+          <th>Total Products</th>
+          <th>Status</th>
+          <th>Created Date</th>
+          <th class="cat-th-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="categoryTableBody">
+        {% for cat in rows %}
+        {% include "admin/partials/category_row.html" %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cat-empty-state" id="categoryEmptyState" {{ '' if not rows else 'hidden' }}>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M3 7l3-4h12l3 4"/><path d="M9 12h6"/></svg>
+    <p>No categories found. Try a different search or add a new category.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- ============ ADD / EDIT CATEGORY MODAL ============ -->
+<div class="cat-modal-overlay" id="categoryFormModal">
+  <div class="cat-modal">
+    <div class="cat-modal-head">
+      <h3>Add Category</h3>
+      <button class="cat-modal-close" type="button" aria-label="Close" data-close-modal>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <form id="categoryForm" novalidate onsubmit="return false;">
+      <!-- filled by /admin/categories/new or /admin/categories/{id}/edit -->
+    </form>
+  </div>
+</div>
+
+<!-- ============ VIEW CATEGORY MODAL ============ -->
+<div class="cat-modal-overlay" id="categoryViewModal">
+  <div class="cat-modal">
+    <div class="cat-modal-head">
+      <h3>Category Details</h3>
+      <button class="cat-modal-close" type="button" aria-label="Close" data-close-modal>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="cat-modal-body" id="categoryViewBody">
+      <!-- filled by /admin/categories/{id}/view -->
+    </div>
+    <div class="cat-modal-foot cat-modal-foot--center">
+      <button type="button" class="btn btn-outline btn-sm" data-close-modal>Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DELETE CONFIRM MODAL ============ -->
+<div class="cat-modal-overlay" id="categoryDeleteModal">
+  <div class="cat-modal cat-modal--confirm" id="categoryDeleteBody">
+    <!-- filled by /admin/categories/{id}/confirm-delete -->
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="cat-toast" id="categoryToast">
+  <span id="categoryToastMsg">Saved</span>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% set values = form_values or {} %}
+{% set name_val = values.get('name', category.name if category else '') %}
+{% set slug_val = values.get('slug', category.slug if category else '') %}
+{% set status_val = values.get('status', category.status if category else 'active') %}
+{% set sort_val = values.get('sortOrder', next_sort_order) %}
+{% set image_val = values.get('image', category.image if category else None) %}
+
+<div class="cat-modal-body">
+  <input type="hidden" id="categoryId" value="{{ category.id if category else '' }}">
+
+  <div class="cat-form-row">
+    <div class="cat-form-group">
+      <label for="categoryName">Category Name <span class="req">*</span></label>
+      <input type="text" id="categoryName" name="name" placeholder="e.g. Toran" autocomplete="off"
+        value="{{ name_val }}"
+        class="{{ 'is-invalid' if errors.get('name') }}"
+        oninput="if(document.getElementById('categorySlug').dataset.manual!=='true'){document.getElementById('categorySlug').value=window.bfSlugify(this.value);}">
+      <span class="cat-field-error" id="categoryNameError">{{ errors.get('name', '') }}</span>
+    </div>
+  </div>
+
+  <div class="cat-form-row">
+    <div class="cat-form-group">
+      <label for="categorySlug">
+        Slug <span class="req">*</span>
+        <button type="button" class="cat-slug-auto-toggle{{ '' if category else ' is-active' }}" id="slugAutoToggle"
+          onclick="document.getElementById('categorySlug').dataset.manual='false'; this.classList.add('is-active'); document.getElementById('categorySlug').value=window.bfSlugify(document.getElementById('categoryName').value);">Auto</button>
+      </label>
+      <input type="text" id="categorySlug" name="slug" placeholder="e.g. toran" autocomplete="off"
+        value="{{ slug_val }}"
+        data-manual="{{ 'true' if category else 'false' }}"
+        class="{{ 'is-invalid' if errors.get('slug') }}"
+        oninput="this.dataset.manual='true'; document.getElementById('slugAutoToggle').classList.remove('is-active');">
+      <span class="cat-field-error" id="categorySlugError">{{ errors.get('slug', '') }}</span>
+    </div>
+  </div>
+
+  <div class="cat-form-row">
+    <div class="cat-form-group">
+      <label>Category Image</label>
+      <div class="cat-image-upload" id="categoryImageDrop" onclick="document.getElementById('categoryImageInput').click();">
+        <div class="cat-image-preview" id="categoryImagePreview">
+          {% include "admin/partials/category_image_preview_inner.html" with context %}
+        </div>
+        <div class="cat-image-upload-text">
+          <strong>Upload category image</strong>
+          <span>PNG or JPG, up to 2MB</span>
+          <span id="categoryImageUploadingNote" class="htmx-indicator" style="color:var(--accent);font-weight:600;">Uploading…</span>
+        </div>
+        <input type="file" id="categoryImageInput" name="file" accept="image/png,image/jpeg" hidden
+          hx-post="/admin/categories/upload-image" hx-trigger="change" hx-target="#categoryImagePreview"
+          hx-swap="innerHTML" hx-encoding="multipart/form-data"
+          hx-disabled-elt="#categoryFormSave" hx-indicator="#categoryImageUploadingNote">
+      </div>
+      <input type="hidden" id="categoryImageValue" name="image" value="{{ image_val or '' }}">
+    </div>
+  </div>
+
+  <div class="cat-form-row">
+    <div class="cat-form-group">
+      <label for="categoryStatus">Status</label>
+      <select id="categoryStatus" name="status">
+        <option value="active" {{ 'selected' if status_val == 'active' }}>Active</option>
+        <option value="inactive" {{ 'selected' if status_val == 'inactive' }}>Inactive</option>
+      </select>
+    </div>
+    <div class="cat-form-group">
+      <label for="categorySortOrder">Sort Order</label>
+      <input type="number" id="categorySortOrder" name="sortOrder" min="0" step="1" placeholder="0" value="{{ sort_val }}">
+    </div>
+  </div>
+</div>
+
+<div class="cat-modal-foot">
+  <button type="button" class="btn btn-outline btn-sm" data-close-modal>Cancel</button>
+  {% if category %}
+  <button type="button" class="btn btn-primary btn-sm" id="categoryFormSave"
+    hx-put="/admin/categories/{{ category.id }}" hx-target="#categoryTableBody" hx-swap="innerHTML"
+    hx-include="closest form">Save Changes</button>
+  {% else %}
+  <button type="button" class="btn btn-primary btn-sm" id="categoryFormSave"
+    hx-post="/admin/categories" hx-target="#categoryTableBody" hx-swap="innerHTML"
+    hx-include="closest form">Save Category</button>
+  {% endif %}
+</div>

@@ -1,0 +1,29 @@
+# ==========================================================
+# Badariya Flowers Backend — dependencies
+# (this file was empty before; filling it in is required for
+#  `pip install -r requirements.txt` to actually work — no
+#  existing pin was ever removed, there was nothing here yet)
+# ==========================================================
+
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+
+# Database
+sqlalchemy==2.0.35
+pymysql==1.1.1
+cryptography==43.0.1
+
+# Settings / validation
+pydantic==2.9.2
+pydantic-settings==2.5.2
+email-validator==2.2.0   # required by app/schemas/settings.py (EmailStr fields)
+
+# Server-rendered admin pages (Jinja2 + HTMX) — new for the
+# Categories module migration
+jinja2==3.1.4
+python-multipart==0.0.9
+
+# Admin login — session cookies (SessionMiddleware needs itsdangerous to
+# sign the cookie). Password hashing uses only the stdlib (hashlib
+# pbkdf2_hmac), so no extra dependency is needed for that part.
+itsdangerous==2.2.0

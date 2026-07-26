@@ -1,0 +1,8 @@
+{% for sub in rows %}
+{% set parent_category = categories | selectattr("id", "equalto", sub.categoryId) | first %}
+{% include "admin/partials/sub_category_row.html" %}
+{% endfor %}
+<div class="cat-empty-state" id="subCategoryEmptyState" hx-swap-oob="true" {{ '' if not rows else 'hidden' }}>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M3 7l3-4h12l3 4"/><path d="M9 12h6"/></svg>
+  <p>No sub categories found. Try a different search or add a new sub category.</p>
+</div>

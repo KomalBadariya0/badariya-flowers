@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Admin{% endblock %} — Badariya Flowers Admin</title>
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Reuse the exact customer-site design tokens, buttons, resets -->
+<link rel="stylesheet" href="/assets/css/style.css">
+<!-- Admin shell (sidebar / topbar) — shared across every admin page -->
+<link rel="stylesheet" href="/admin/assets/css/admin.css">
+{% block extra_css %}{% endblock %}
+</head>
+<body class="admin-body" data-admin-page="{{ active_page }}">
+
+<div class="admin-shell">
+
+  {% include "layout/sidebar.html" %}
+
+  <main class="admin-main">
+    {% include "layout/topbar.html" %}
+
+    <div class="admin-content">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+
+{% block modals %}{% endblock %}
+
+<!-- htmx: the only third-party script this page loads. All Add/Edit/
+     Delete/Search/Filter/Toggle logic below is plain HTML attributes —
+     no page-specific JS file is loaded anymore. -->
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+<!-- Generic, reusable modal open/close + toast glue (shared by every
+     admin module, not specific to Categories). See file header for
+     what it does — it is deliberately tiny. -->
+<script src="/admin/assets/js/htmx-ui.js"></script>
+<!-- Sidebar collapse / dropdown interactions only (no data, no API
+     calls) — same file the old static admin pages already use. -->
+<script src="/admin/assets/js/admin.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

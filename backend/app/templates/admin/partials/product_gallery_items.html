@@ -1,0 +1,18 @@
+{% for item in items %}
+{% if item.url %}
+<div class="prod-gallery-item" draggable="true">
+  <img src="{{ item.url }}" alt="Product image">
+  <input type="hidden" name="images" value="{{ item.url }}">
+  <button type="button" class="prod-gallery-remove" data-prod-remove-image aria-label="Remove image">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+</div>
+{% else %}
+<div class="prod-gallery-item" style="display:flex;align-items:center;justify-content:center;padding:8px;">
+  <span class="cat-field-error" style="display:block;text-align:center;">{{ item.error or "Upload failed" }}</span>
+  <button type="button" class="prod-gallery-remove" data-prod-remove-image aria-label="Dismiss">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+</div>
+{% endif %}
+{% endfor %}

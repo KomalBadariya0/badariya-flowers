@@ -1,0 +1,37 @@
+/* ==========================================================================
+   ANIMATIONS — restrained: fade, lift, reveal-on-scroll
+   ========================================================================== */
+
+@keyframes fadeUp{
+  from{ opacity:0; transform:translateY(18px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+@keyframes fadeIn{
+  from{ opacity:0; }
+  to{ opacity:1; }
+}
+@keyframes floatSoft{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-6px); }
+}
+@keyframes floatY{
+  0%,100%{ transform:translateY(0) rotate(0deg); }
+  50%{ transform:translateY(-14px) rotate(4deg); }
+}
+
+.hero-content .eyebrow{ animation:fadeUp .7s ease both; }
+.hero-content h1{ animation:fadeUp .8s .08s ease both; }
+.hero-content p{ animation:fadeUp .8s .16s ease both; }
+.hero-content .hero-cta{ animation:fadeUp .8s .24s ease both; }
+
+[data-reveal]{
+  opacity:0;
+  transform:translateY(22px);
+  transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1);
+}
+[data-reveal].in-view{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.fab-wa{ animation:floatSoft 3.4s ease-in-out infinite; }

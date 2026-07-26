@@ -1,0 +1,117 @@
+<div id="catalogueContent">
+
+  <!-- ============ MASTER CATALOGUE ============ -->
+  <div class="admin-card" style="margin-bottom:22px;">
+    <div class="admin-card-head cat-card-head">
+      <div>
+        <h3>Master Catalogue</h3>
+        <p>The single full-catalogue PDF, shared across the whole website</p>
+      </div>
+      <button class="btn btn-primary btn-icon-sm" type="button"
+        hx-get="/admin/catalogue/master/upload-form" hx-target="#catalogueUploadForm" hx-swap="innerHTML"
+        data-open-modal="catalogueUploadModal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        {{ 'Replace PDF' if master else 'Upload PDF' }}
+      </button>
+    </div>
+
+    {% if master %}
+    <div style="display:flex;align-items:center;gap:16px;padding:20px 22px;flex-wrap:wrap;">
+      <div class="cat-image-preview" style="color:var(--primary);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>
+      </div>
+      <div style="flex:1;min-width:180px;">
+        <strong style="display:block;font-size:13.5px;color:var(--heading);font-weight:600;">{{ master.title }}</strong>
+        <span style="font-size:11.5px;color:var(--text);">
+          {{ '%.2f'|format(master.fileSize / 1024 / 1024) ~ ' MB' if master.fileSize else 'Size unknown' }}
+          &middot; Uploaded {{ master.uploadedAt.strftime('%d %b %Y') if master.uploadedAt else '—' }}
+        </span>
+      </div>
+      <div class="cat-actions-cell">
+        <a class="cat-action-btn" href="{{ master.fileUrl }}" target="_blank" rel="noopener" aria-label="View PDF">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </a>
+        <button class="cat-action-btn is-danger" type="button" aria-label="Delete master catalogue"
+          hx-get="/admin/catalogue/{{ master.id }}/confirm-delete" hx-target="#catalogueDeleteBody" hx-swap="innerHTML"
+          data-open-modal="catalogueDeleteModal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+        </button>
+      </div>
+    </div>
+    {% else %}
+    <div class="cat-empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>
+      <p>No master catalogue uploaded yet.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ============ PER SUB-CATEGORY CATALOGUES ============ -->
+  <div class="admin-card">
+    <div class="admin-card-head cat-card-head">
+      <div>
+        <h3>Sub-Category Catalogues</h3>
+        <p>Optional — a dedicated PDF per sub-category, shown on its page</p>
+      </div>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Sub Category</th>
+            <th>Category</th>
+            <th>Catalogue</th>
+            <th>Uploaded</th>
+            <th class="cat-th-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in sub_catalogues %}
+          <tr>
+            <td><div class="cat-name-cell"><strong>{{ item.sub.name }}</strong></div></td>
+            <td><span class="cat-slug-pill">{{ item.category_name }}</span></td>
+            <td>
+              {% if item.catalogue %}
+              <span class="admin-badge admin-badge--success"><span class="dot"></span>Uploaded</span>
+              {% else %}
+              <span class="admin-badge admin-badge--warning"><span class="dot"></span>Not uploaded</span>
+              {% endif %}
+            </td>
+            <td>{{ item.catalogue.uploadedAt.strftime('%d %b %Y') if item.catalogue and item.catalogue.uploadedAt else '—' }}</td>
+            <td>
+              <div class="cat-actions-cell">
+                {% if item.catalogue %}
+                <a class="cat-action-btn" href="{{ item.catalogue.fileUrl }}" target="_blank" rel="noopener" aria-label="View PDF">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                </a>
+                {% endif %}
+                <button class="cat-action-btn" type="button" aria-label="Upload catalogue for {{ item.sub.name }}"
+                  hx-get="/admin/catalogue/subcategory/{{ item.sub.id }}/upload-form" hx-target="#catalogueUploadForm" hx-swap="innerHTML"
+                  data-open-modal="catalogueUploadModal">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+                {% if item.catalogue %}
+                <button class="cat-action-btn is-danger" type="button" aria-label="Delete catalogue for {{ item.sub.name }}"
+                  hx-get="/admin/catalogue/{{ item.catalogue.id }}/confirm-delete" hx-target="#catalogueDeleteBody" hx-swap="innerHTML"
+                  data-open-modal="catalogueDeleteModal">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+                </button>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if not sub_catalogues %}
+    <div class="cat-empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M3 7l3-4h12l3 4"/><path d="M9 12h6"/></svg>
+      <p>No sub categories yet — add one first from Sub Categories.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>

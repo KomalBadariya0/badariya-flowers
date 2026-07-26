@@ -1,0 +1,25 @@
+<div class="cat-view-head">
+  <img src="{{ category.image or '' }}" alt="{{ category.name }}">
+  <div>
+    <h4>{{ category.name }}</h4>
+    <span class="cat-slug-pill">{{ category.slug }}</span>
+  </div>
+</div>
+<div class="cat-view-grid">
+  <div class="cat-view-field">
+    <span>Total Products</span>
+    <strong>{{ category.totalProducts }}</strong>
+  </div>
+  <div class="cat-view-field">
+    <span>Status</span>
+    <strong>{{ 'Active' if category.status == 'active' else 'Inactive' }}</strong>
+  </div>
+  <div class="cat-view-field">
+    <span>Sort Order</span>
+    <strong>{{ category.sortOrder }}</strong>
+  </div>
+  <div class="cat-view-field">
+    <span>Created Date</span>
+    <strong>{{ category.createdAt.strftime('%d %b %Y') if category.createdAt else '—' }}</strong>
+  </div>
+</div>

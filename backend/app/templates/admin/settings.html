@@ -1,0 +1,31 @@
+{% extends "layout/base_admin.html" %}
+{% block title %}Settings{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/admin/assets/css/products.css">
+<link rel="stylesheet" href="/admin/assets/css/settings.css">
+{% endblock %}
+
+{% block content %}
+<div class="admin-page-head">
+  <div>
+    <span class="admin-breadcrumb">Admin Panel</span>
+    <h1>Settings</h1>
+  </div>
+</div>
+
+<form id="settingsForm" novalidate onsubmit="return false;">
+  <div class="admin-card set-card">
+    <div id="settingsFormFields">
+      {% include "admin/partials/settings_form.html" %}
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block modals %}
+<!-- ============ TOAST ============ -->
+<div class="set-toast" id="settingsToast">
+  <span id="settingsToastMsg">Saved</span>
+</div>
+{% endblock %}

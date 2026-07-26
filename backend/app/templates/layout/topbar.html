@@ -1,0 +1,38 @@
+<header class="admin-topbar">
+  <button class="admin-topbar-toggle" id="sidebarCollapseBtn" aria-label="Toggle sidebar" title="Toggle sidebar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+
+  <div class="admin-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <input type="text" placeholder="Search products, categories, orders…" aria-label="Search">
+  </div>
+
+  <div class="admin-topbar-spacer"></div>
+
+  <div class="admin-topbar-actions">
+    <div style="position:relative;">
+      <button class="admin-icon-btn" id="notifBtn" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+        <span class="dot"></span>
+      </button>
+      <div class="admin-dropdown" id="notifDropdown" style="width:260px;">
+        <div class="admin-dropdown-head"><strong>Notifications</strong><span>3 new updates</span></div>
+        <div class="admin-notif-item"><strong>New enquiry received</strong><span>WhatsApp enquiry for Jhoomar 18" — 5m ago</span></div>
+        <div class="admin-notif-item"><strong>Catalogue PDF updated</strong><span>Full catalogue re-uploaded — 2h ago</span></div>
+        <div class="admin-notif-item"><strong>Low stock flagged</strong><span>Genda Big Latkan running low — 1d ago</span></div>
+      </div>
+    </div>
+
+    <div class="admin-profile" id="profileBtn">
+      <div class="admin-avatar">BF</div>
+      <div class="admin-profile-text"><strong>{{ request.session.get('admin_name', 'Admin') }}</strong><span>Owner</span></div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      <div class="admin-dropdown" id="profileDropdown">
+        <div class="admin-dropdown-head"><strong>{{ request.session.get('admin_name', 'Admin') }}</strong><span>{{ request.session.get('admin_email', '') }}</span></div>
+        <a href="/admin/settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M4 12h2M18 12h2M12 4v2M12 18v2"/></svg>Account settings</a>
+        <a href="/admin/logout" class="danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>Logout</a>
+      </div>
+    </div>
+  </div>
+</header>

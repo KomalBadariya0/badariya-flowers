@@ -1,0 +1,4 @@
+<option value="">Select a sub category…</option>
+{% for s in sub_categories %}
+<option value="{{ s.id }}" {{ 'selected' if selected_sub and selected_sub|string == s.id|string }}>{{ s.name }}</option>
+{% endfor %}

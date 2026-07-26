@@ -1,0 +1,13 @@
+{% if total_pages and total_pages > 1 %}
+<button type="button" class="prod-page-btn {{ 'is-disabled' if page == 1 }}"
+  hx-get="/admin/products/rows?page={{ page - 1 }}" hx-target="#productTableBody" hx-swap="innerHTML"
+  hx-include="#productFilters,#productSearchInput" {{ 'disabled' if page == 1 }}>&lsaquo;</button>
+{% for i in range(1, total_pages + 1) %}
+<button type="button" class="prod-page-btn {{ 'is-active' if i == page }}"
+  hx-get="/admin/products/rows?page={{ i }}" hx-target="#productTableBody" hx-swap="innerHTML"
+  hx-include="#productFilters,#productSearchInput">{{ i }}</button>
+{% endfor %}
+<button type="button" class="prod-page-btn {{ 'is-disabled' if page == total_pages }}"
+  hx-get="/admin/products/rows?page={{ page + 1 }}" hx-target="#productTableBody" hx-swap="innerHTML"
+  hx-include="#productFilters,#productSearchInput" {{ 'disabled' if page == total_pages }}>&rsaquo;</button>
+{% endif %}
