@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify Code — Badariya Flowers Admin</title>
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/admin/assets/css/admin.css">
+<style>
+
+  body.admin-login-body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: linear-gradient(180deg, var(--admin-dark) 0%, var(--admin-dark-2) 100%);
+    padding:24px;
+  }
+  .admin-login-card{
+    background: ghostwhite;
+    width:100%;
+    max-width:400px;
+    background: var(--card, #FFFCF8);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lift, 0 24px 60px rgba(0,0,0,.25));
+    padding:40px 36px;
+  }
+  .admin-login-brand{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    margin-bottom:20px;
+  }
+  .admin-login-brand img{ width:56px; height:56px; object-fit:contain; margin-bottom:12px; }
+  .admin-login-brand strong{ font-family:"Cormorant Garamond", serif; font-size:1.5rem; color:var(--heading); display:block; }
+  .admin-login-brand span{ font-size:.85rem; color:var(--text); letter-spacing:.02em; }
+  .admin-otp-copy{
+    text-align:center;
+    font-size:.88rem;
+    color:var(--text);
+    margin-bottom:24px;
+    line-height:1.5;
+  }
+  .admin-otp-copy strong{ color:var(--heading); }
+  .admin-login-field{ margin-bottom:18px; }
+  .admin-login-field label{ display:block; font-size:.85rem; font-weight:600; color:var(--heading); margin-bottom:6px; }
+  .admin-login-field input{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    font-family:inherit;
+    font-size:1.3rem;
+    letter-spacing:.5em;
+    text-align:center;
+    background:#fff;
+  }
+  .admin-login-field input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .admin-login-error{
+    background: rgba(233, 230, 229, 0.838);
+    color: var(--danger);
+    border:1px solid rgba(181,101,74,0.3);
+    border-radius:10px;
+    padding:10px 14px;
+    font-size:.88rem;
+    margin-bottom:18px;
+  }
+  .admin-login-submit{
+    width:100%;
+    padding:13px;
+    border:none;
+    border-radius:10px;
+    background: var(--primary);
+    color:#fff;
+    font-weight:600;
+    font-size:.98rem;
+    cursor:pointer;
+    transition: background .2s ease;
+  }
+  .admin-login-submit:hover{ background: var(--hover, #6E472C); }
+  .admin-otp-resend{
+    display:block;
+    text-align:center;
+    margin-top:20px;
+    font-size:.85rem;
+    color:var(--text);
+  }
+  .admin-otp-resend a{
+    color:var(--primary);
+    text-decoration:none;
+    font-weight:600;
+  }
+  .admin-otp-resend a:hover{ text-decoration:underline; }
+  .admin-otp-resend span.disabled{
+    color:#999;
+    font-weight:600;
+  }
+  .admin-login-back{
+    display:block;
+    text-align:center;
+    margin-top:14px;
+    font-size:.85rem;
+    color:var(--text);
+    text-decoration:none;
+  }
+  .admin-login-back:hover{ color:var(--primary); }
+</style>
+</head>
+<body class="admin-login-body">
+
+  <div class="admin-login-card">
+    <div class="admin-login-brand">
+      <img src="/assets/images/logo/logo.png" alt="Badariya Flowers logo">
+      <strong>Badariya Flowers</strong>
+      <span>Admin Panel Login</span>
+    </div>
+
+    <p class="admin-otp-copy">
+      We've sent a 6-digit verification code to<br>
+      <strong>{{ email }}</strong>. Enter it below to continue.
+    </p>
+
+    {% if error %}
+    <div class="admin-login-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/admin/verify-otp">
+      <div class="admin-login-field">
+        <label for="otp">Verification Code</label>
+        <input
+          type="text"
+          id="otp"
+          name="otp"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          autocomplete="one-time-code"
+          maxlength="6"
+          placeholder="------"
+          required
+          autofocus>
+      </div>
+      <button type="submit" class="admin-login-submit">Verify &amp; Continue</button>
+    </form>
+
+    <div class="admin-otp-resend" id="resendWrap"
+         data-cooldown="{{ resend_cooldown or 0 }}">
+      {% if resend_cooldown and resend_cooldown > 0 %}
+        <span class="disabled">Resend code in <span id="resendCountdown">{{ resend_cooldown }}</span>s</span>
+      {% else %}
+        <a href="/admin/resend-otp">Resend code</a>
+      {% endif %}
+    </div>
+
+    <a href="/admin/login" class="admin-login-back">&larr; Back to login</a>
+  </div>
+
+  <script>
+    (function () {
+      var wrap = document.getElementById('resendWrap');
+      var seconds = parseInt(wrap.getAttribute('data-cooldown') || '0', 10);
+      if (!seconds || seconds <= 0) return;
+
+      var countdownEl = document.getElementById('resendCountdown');
+      var timer = setInterval(function () {
+        seconds -= 1;
+        if (seconds <= 0) {
+          clearInterval(timer);
+          wrap.innerHTML = '<a href="/admin/resend-otp">Resend code</a>';
+          return;
+        }
+        if (countdownEl) countdownEl.textContent = seconds;
+      }, 1000);
+    })();
+  </script>
+
+</body>
+</html>

@@ -50,6 +50,7 @@ from app.models import (
     catalogue,
     settings as settings_model,
     admin_user,
+    admin_otp,
 )
 
 

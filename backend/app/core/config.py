@@ -75,6 +75,25 @@ class Settings(BaseSettings):
     DEFAULT_ADMIN_PASSWORD: str = "admin123"
     DEFAULT_ADMIN_NAME: str = "Badariya Admin"
 
+    # ---- Admin Login OTP (2FA) ----
+    # After email+password checks out, a 6-digit OTP is emailed to the
+    # admin's own email address. Login only completes once that OTP is
+    # verified. Override all of this via .env for production.
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USE_TLS: bool = True
+    SMTP_USERNAME: str = ""
+    SMTP_PASSWORD: str = ""
+    # "From" address shown on the OTP email. Falls back to SMTP_USERNAME
+    # if left blank.
+    MAIL_FROM_EMAIL: str = ""
+    MAIL_FROM_NAME: str = "Badariya Flowers Admin"
+
+    OTP_LENGTH: int = 6
+    OTP_EXPIRY_SECONDS: int = 5 * 60  # OTP valid for 5 minutes
+    OTP_MAX_ATTEMPTS: int = 5         # wrong tries allowed before OTP is voided
+    OTP_RESEND_COOLDOWN_SECONDS: int = 30
+
     model_config = SettingsConfigDict(
         env_file=str(BACKEND_ROOT / ".env"),
         env_file_encoding="utf-8",

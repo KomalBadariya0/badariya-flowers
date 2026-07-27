@@ -10,7 +10,20 @@ Route map (all under /admin/settings):
     GET  ""                    full page (tabs + form, one Save button)
     POST ""                    save -> re-renders the form fragment with
                                 either field errors or a success toast
-    POST /account              update login email / password
+    POST /account              update login email / password. If the
+                                email is being changed, this does NOT
+                                save it yet -- it emails an OTP to the
+                                NEW address and re-renders the Account
+                                tab in an "enter code" state instead.
+                                (Password-only changes, with no email
+                                change, still save immediately.)
+    POST /account/verify-otp   checks the code; only on success is the
+                                pending email (+ password, if changed
+                                together) actually written to the DB.
+    POST /account/resend-otp   re-sends a fresh code to the same
+                                pending new email (rate-limited).
+    POST /account/cancel-otp   drops the pending change, back to the
+                                normal Account form.
     POST /upload-logo          image upload -> preview fragment (used
     POST /upload-favicon       inside the form; each renders a small
     POST /upload-hero-image    inline preview + an out-of-band swap of
@@ -211,12 +224,17 @@ def _render_settings_form(
     request: Request, db: Session, *,
     errors=None, form_values=None, account_errors=None, account_values=None,
     headers=None,
+    account_otp_pending=False, account_otp_email=None, resend_cooldown=0,
 ) -> HTMLResponse:
     """Every branch of settings_save / settings_account_save re-renders the
     same full form fragment (site-settings tabs + the Account tab). This
     centralizes fetching the current admin (needed by the Account tab's
     email field) so each branch only needs to pass whichever errors are
-    relevant to it."""
+    relevant to it.
+
+    account_otp_pending flips the Account tab into "enter the code we
+    just emailed you" mode instead of the normal email/password fields
+    -- used while an email change is awaiting OTP confirmation."""
     row = settings_service.get_or_create(db)
     admin_id = get_logged_in_admin_id(request)
     admin = auth_service.get_admin_by_id(db, admin_id) if admin_id else None
@@ -228,8 +246,22 @@ def _render_settings_form(
         "admin": admin,
         "account_errors": account_errors or {},
         "account_values": account_values,
+        "account_otp_pending": account_otp_pending,
+        "account_otp_email": account_otp_email,
+        "resend_cooldown": resend_cooldown,
     }
     return templates.TemplateResponse("admin/partials/settings_form.html", context, headers=headers)
+
+
+def _pending_email_change(request: Request) -> dict | None:
+    """The email-change OTP flow needs to remember, between the "send
+    code" request and the "verify code" request, which new email is
+    being confirmed (and the already-hashed new password, if one was
+    submitted alongside it). The admin session is the right place for
+    this -- it's already trusted, server-side, and tied to this one
+    logged-in admin, so nothing sensitive ever round-trips through the
+    browser as a hidden form field."""
+    return request.session.get("pending_email_change")
 
 
 # ======================================================================
@@ -332,15 +364,117 @@ async def settings_account_save(request: Request, db: Session = Depends(get_db))
             request, db, account_errors=errors, account_values={"newEmail": new_email},
         )
 
-    admin.email = new_email
-    if wants_password_change:
-        admin.password_hash = hash_password(new_password)
+    email_changing = new_email != admin.email
+
+    if not email_changing:
+        # No email change -> nothing to verify, save (password, if any)
+        # immediately, exactly as before.
+        if wants_password_change:
+            admin.password_hash = hash_password(new_password)
+            db.commit()
+            db.refresh(admin)
+        return _render_settings_form(
+            request, db, headers=toast_only("Account updated successfully", toast_id="settingsToast"),
+        )
+
+    # Email is changing -> don't save it yet. Stash the pending new email
+    # (+ already-hashed new password, if one was submitted alongside it)
+    # in the session, email an OTP to the NEW address, and flip the
+    # Account tab into "enter the code" mode instead.
+    request.session["pending_email_change"] = {
+        "admin_id": admin.id,
+        "new_email": new_email,
+        "new_password_hash": hash_password(new_password) if wants_password_change else None,
+    }
+
+    try:
+        auth_service.create_and_send_email_change_otp(db, admin, new_email)
+    except Exception:
+        request.session.pop("pending_email_change", None)
+        return _render_settings_form(
+            request, db,
+            account_errors={"newEmail": "Couldn't send the verification code. Please try again."},
+            account_values={"newEmail": new_email},
+        )
+
+    cooldown = auth_service.seconds_until_resend_allowed(db, admin.id)
+    return _render_settings_form(
+        request, db, account_otp_pending=True, account_otp_email=new_email, resend_cooldown=cooldown,
+    )
+
+
+@router.post("/account/verify-otp", response_class=HTMLResponse)
+async def settings_account_verify_otp(request: Request, db: Session = Depends(get_db)):
+    admin_id = get_logged_in_admin_id(request)
+    admin = auth_service.get_admin_by_id(db, admin_id) if admin_id else None
+    pending = _pending_email_change(request)
+
+    if not admin or not pending or pending.get("admin_id") != admin.id:
+        request.session.pop("pending_email_change", None)
+        return _render_settings_form(
+            request, db, account_errors={"newEmail": "That email change has expired. Please try again."},
+        )
+
+    form = await request.form()
+    otp = form.get("otp") or ""
+
+    success, error = auth_service.verify_otp(db, admin.id, otp)
+    if not success:
+        cooldown = auth_service.seconds_until_resend_allowed(db, admin.id)
+        return _render_settings_form(
+            request, db,
+            account_errors={"otp": error},
+            account_otp_pending=True, account_otp_email=pending["new_email"], resend_cooldown=cooldown,
+        )
+
+    admin.email = pending["new_email"]
+    if pending.get("new_password_hash"):
+        admin.password_hash = pending["new_password_hash"]
     db.commit()
     db.refresh(admin)
 
+    request.session.pop("pending_email_change", None)
+    if request.session.get("admin_id") == admin.id:
+        request.session["admin_email"] = admin.email
+
     return _render_settings_form(
-        request, db, headers=toast_only("Account updated successfully", toast_id="settingsToast"),
+        request, db, headers=toast_only("Email updated successfully", toast_id="settingsToast"),
     )
+
+
+@router.post("/account/resend-otp", response_class=HTMLResponse)
+async def settings_account_resend_otp(request: Request, db: Session = Depends(get_db)):
+    admin_id = get_logged_in_admin_id(request)
+    admin = auth_service.get_admin_by_id(db, admin_id) if admin_id else None
+    pending = _pending_email_change(request)
+
+    if not admin or not pending or pending.get("admin_id") != admin.id:
+        request.session.pop("pending_email_change", None)
+        return _render_settings_form(
+            request, db, account_errors={"newEmail": "That email change has expired. Please try again."},
+        )
+
+    cooldown = auth_service.seconds_until_resend_allowed(db, admin.id)
+    if cooldown <= 0:
+        try:
+            auth_service.create_and_send_email_change_otp(db, admin, pending["new_email"])
+        except Exception:
+            return _render_settings_form(
+                request, db,
+                account_errors={"otp": "Couldn't resend the code right now. Please try again shortly."},
+                account_otp_pending=True, account_otp_email=pending["new_email"], resend_cooldown=0,
+            )
+        cooldown = auth_service.seconds_until_resend_allowed(db, admin.id)
+
+    return _render_settings_form(
+        request, db, account_otp_pending=True, account_otp_email=pending["new_email"], resend_cooldown=cooldown,
+    )
+
+
+@router.post("/account/cancel-otp", response_class=HTMLResponse)
+async def settings_account_cancel_otp(request: Request, db: Session = Depends(get_db)):
+    request.session.pop("pending_email_change", None)
+    return _render_settings_form(request, db)
 
 
 # ======================================================================

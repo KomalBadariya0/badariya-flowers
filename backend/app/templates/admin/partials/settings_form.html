@@ -38,6 +38,7 @@
 
 {% set support_email_val = v.get('supportEmail', s.supportEmail or '') %}
 {% set support_phone_val = v.get('supportPhone', s.supportPhone or '') %}
+{% set account_tab_active = account_otp_pending or account_errors or account_values %}
 
 {% set website_status_val = v.get('websiteStatus', s.websiteStatus) %}
 {% set maintenance_mode_val = v.get('maintenanceMode', s.maintenanceMode) %}
@@ -47,16 +48,16 @@
 {% set default_wa_message_val = v.get('defaultWaMessage', s.defaultWaMessage or '') %}
 
 <div class="prod-tabs" role="tablist">
-  <button type="button" class="prod-tab-btn is-active" data-prod-tab="general">General</button>
+  <button type="button" class="prod-tab-btn {{ '' if account_tab_active else 'is-active' }}" data-prod-tab="general">General</button>
   <button type="button" class="prod-tab-btn" data-prod-tab="seo">SEO</button>
   <button type="button" class="prod-tab-btn" data-prod-tab="homepage">Homepage</button>
   <button type="button" class="prod-tab-btn" data-prod-tab="contact">Contact</button>
   <button type="button" class="prod-tab-btn" data-prod-tab="advanced">Advanced</button>
-  <button type="button" class="prod-tab-btn" data-prod-tab="account">Account</button>
+  <button type="button" class="prod-tab-btn {{ 'is-active' if account_tab_active else '' }}" data-prod-tab="account">Account</button>
 </div>
 
 <!-- ============ TAB: GENERAL ============ -->
-<div class="prod-tab-panel is-active" data-prod-panel="general">
+<div class="prod-tab-panel {{ '' if account_tab_active else 'is-active' }}" data-prod-panel="general">
 
   <div class="set-form-row">
     <div class="set-form-group">
@@ -471,7 +472,46 @@
 </div>
 
 <!-- ============ TAB: ACCOUNT ============ -->
-<div class="prod-tab-panel" data-prod-panel="account">
+<div class="prod-tab-panel {{ 'is-active' if account_tab_active else '' }}" data-prod-panel="account">
+{% if account_otp_pending %}
+
+  <!-- Email-change OTP entry state: shown instead of the normal
+       email/password fields while a change is awaiting confirmation. -->
+  <div class="set-otp-verify">
+    <p class="set-otp-copy">
+      We've sent a 6-digit verification code to<br>
+      <strong>{{ account_otp_email }}</strong>. Enter it below to confirm your new login email.
+    </p>
+
+    <div class="set-form-row">
+      <div class="set-form-group set-form-group--full">
+        <label for="settingsAccountOtp">Verification Code</label>
+        <input type="text" id="settingsAccountOtp" name="otp" inputmode="numeric" pattern="[0-9]*"
+          autocomplete="one-time-code" maxlength="6" placeholder="------" autofocus
+          class="set-otp-input {{ 'is-invalid' if account_errors.get('otp') }}">
+        <span class="set-field-error">{{ account_errors.get('otp', '') }}</span>
+      </div>
+    </div>
+
+    <div class="set-actions-bar">
+      <button type="button" class="btn btn-primary btn-sm" id="settingsAccountVerifyOtp"
+        hx-post="/admin/settings/account/verify-otp" hx-target="#settingsFormFields" hx-swap="innerHTML"
+        hx-include="#settingsAccountOtp">Verify &amp; Update Email</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="settingsAccountCancelOtp"
+        hx-post="/admin/settings/account/cancel-otp" hx-target="#settingsFormFields" hx-swap="innerHTML">Cancel</button>
+    </div>
+
+    <div class="set-otp-resend" id="settingsOtpResendWrap" data-cooldown="{{ resend_cooldown or 0 }}">
+      {% if resend_cooldown and resend_cooldown > 0 %}
+        <span class="disabled">Resend code in <span id="settingsOtpResendCountdown">{{ resend_cooldown }}</span>s</span>
+      {% else %}
+        <a href="javascript:void(0)" id="settingsOtpResendLink"
+          hx-post="/admin/settings/account/resend-otp" hx-target="#settingsFormFields" hx-swap="innerHTML">Resend code</a>
+      {% endif %}
+    </div>
+  </div>
+
+{% else %}
 
   <div class="set-form-row">
     <div class="set-form-group set-form-group--full">
@@ -480,6 +520,7 @@
         value="{{ account_values.get('newEmail', admin.email) if account_values else admin.email }}"
         class="{{ 'is-invalid' if account_errors.get('newEmail') }}">
       <span class="set-field-error">{{ account_errors.get('newEmail', '') }}</span>
+      <span class="set-hint">Changing this sends a verification code to the new address before it takes effect.</span>
     </div>
   </div>
 
@@ -527,14 +568,16 @@
 
   <div class="set-actions-bar">
     <button type="button" class="btn btn-primary btn-sm" id="settingsAccountSave"
-      hx-post="/admin/settings/account" hx-target="#settingsFormFields" hx-swap="outerHTML"
+      hx-post="/admin/settings/account" hx-target="#settingsFormFields" hx-swap="innerHTML"
       hx-include="closest form">Update Account</button>
   </div>
+
+{% endif %}
 </div>
 
 <!-- ============ SAVE (site settings — General/SEO/Homepage/Contact/Advanced) ============ -->
 <div class="set-actions-bar">
   <button type="button" class="btn btn-primary btn-sm" id="settingsFormSave"
-    hx-post="/admin/settings" hx-target="#settingsFormFields" hx-swap="outerHTML"
+    hx-post="/admin/settings" hx-target="#settingsFormFields" hx-swap="innerHTML"
     hx-include="closest form">Save Settings</button>
 </div>
