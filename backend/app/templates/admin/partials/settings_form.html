@@ -52,6 +52,7 @@
   <button type="button" class="prod-tab-btn" data-prod-tab="homepage">Homepage</button>
   <button type="button" class="prod-tab-btn" data-prod-tab="contact">Contact</button>
   <button type="button" class="prod-tab-btn" data-prod-tab="advanced">Advanced</button>
+  <button type="button" class="prod-tab-btn" data-prod-tab="account">Account</button>
 </div>
 
 <!-- ============ TAB: GENERAL ============ -->
@@ -469,7 +470,69 @@
   </div>
 </div>
 
-<!-- ============ SAVE ============ -->
+<!-- ============ TAB: ACCOUNT ============ -->
+<div class="prod-tab-panel" data-prod-panel="account">
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label for="settingsNewEmail">Login Email</label>
+      <input type="email" id="settingsNewEmail" name="newEmail" autocomplete="off"
+        value="{{ account_values.get('newEmail', admin.email) if account_values else admin.email }}"
+        class="{{ 'is-invalid' if account_errors.get('newEmail') }}">
+      <span class="set-field-error">{{ account_errors.get('newEmail', '') }}</span>
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group set-form-group--full">
+      <label for="settingsCurrentPassword">Current Password <span class="req">*</span></label>
+      <div class="set-password-field">
+        <input type="password" id="settingsCurrentPassword" name="currentPassword" placeholder="Required to change email or password" autocomplete="off"
+          class="{{ 'is-invalid' if account_errors.get('currentPassword') }}">
+        <button type="button" class="set-password-toggle" data-toggle-password="settingsCurrentPassword" aria-label="Show password">
+          <svg class="eye-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17.94 17.94A10.94 10.94 0 0112 19c-7 0-11-7-11-7a18.6 18.6 0 015.06-5.94M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 7 11 7a18.6 18.6 0 01-2.16 3.19M14.12 14.12a3 3 0 11-4.24-4.24"/><path d="M1 1l22 22"/></svg>
+        </button>
+      </div>
+      <span class="set-field-error">{{ account_errors.get('currentPassword', '') }}</span>
+    </div>
+  </div>
+
+  <div class="set-form-row">
+    <div class="set-form-group">
+      <label for="settingsNewPassword">New Password <span style="font-weight:400;color:var(--text);">(leave blank to keep current)</span></label>
+      <div class="set-password-field">
+        <input type="password" id="settingsNewPassword" name="newPassword" placeholder="At least 8 characters" autocomplete="off"
+          class="{{ 'is-invalid' if account_errors.get('newPassword') }}">
+        <button type="button" class="set-password-toggle" data-toggle-password="settingsNewPassword" aria-label="Show password">
+          <svg class="eye-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17.94 17.94A10.94 10.94 0 0112 19c-7 0-11-7-11-7a18.6 18.6 0 015.06-5.94M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 7 11 7a18.6 18.6 0 01-2.16 3.19M14.12 14.12a3 3 0 11-4.24-4.24"/><path d="M1 1l22 22"/></svg>
+        </button>
+      </div>
+      <span class="set-field-error">{{ account_errors.get('newPassword', '') }}</span>
+    </div>
+    <div class="set-form-group">
+      <label for="settingsConfirmPassword">Confirm New Password</label>
+      <div class="set-password-field">
+        <input type="password" id="settingsConfirmPassword" name="confirmPassword" placeholder="Re-type new password" autocomplete="off"
+          class="{{ 'is-invalid' if account_errors.get('confirmPassword') }}">
+        <button type="button" class="set-password-toggle" data-toggle-password="settingsConfirmPassword" aria-label="Show password">
+          <svg class="eye-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17.94 17.94A10.94 10.94 0 0112 19c-7 0-11-7-11-7a18.6 18.6 0 015.06-5.94M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 7 11 7a18.6 18.6 0 01-2.16 3.19M14.12 14.12a3 3 0 11-4.24-4.24"/><path d="M1 1l22 22"/></svg>
+        </button>
+      </div>
+      <span class="set-field-error">{{ account_errors.get('confirmPassword', '') }}</span>
+    </div>
+  </div>
+
+  <div class="set-actions-bar">
+    <button type="button" class="btn btn-primary btn-sm" id="settingsAccountSave"
+      hx-post="/admin/settings/account" hx-target="#settingsFormFields" hx-swap="outerHTML"
+      hx-include="closest form">Update Account</button>
+  </div>
+</div>
+
+<!-- ============ SAVE (site settings — General/SEO/Homepage/Contact/Advanced) ============ -->
 <div class="set-actions-bar">
   <button type="button" class="btn btn-primary btn-sm" id="settingsFormSave"
     hx-post="/admin/settings" hx-target="#settingsFormFields" hx-swap="outerHTML"

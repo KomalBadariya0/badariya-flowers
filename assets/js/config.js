@@ -27,7 +27,7 @@
 const SITE = {
   brand: "Badariya Flowers",
   tagline: "Handcrafted Artificial Flowers For Every Celebration",
-  whatsappNumber: "1111111111",
+  whatsappNumber: "",
   logo: "/assets/images/logo/logo.png",
   phone: "+91 96678 57709",
   email: "info@badariyaflowers.com",

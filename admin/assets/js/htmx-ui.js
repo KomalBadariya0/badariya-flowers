@@ -318,5 +318,15 @@
         bfRefreshGalleryCover();
       });
     })();
-  
+  /* ---- password show/hide toggle (Settings > Account tab) ---- */
+document.addEventListener("click", function (e) {
+  const btn = e.target.closest("[data-toggle-password]");
+  if (!btn) return;
+  const input = document.getElementById(btn.getAttribute("data-toggle-password"));
+  if (!input) return;
+  const willShow = input.type === "password";
+  input.type = willShow ? "text" : "password";
+  btn.classList.toggle("is-visible", willShow);
+  btn.setAttribute("aria-label", willShow ? "Hide password" : "Show password");
+});
   })();

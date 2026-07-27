@@ -227,3 +227,18 @@
      .set-toast{ left:14px; right:14px; bottom:16px; }
      .set-map-preview{ aspect-ratio:4/3; }
    }
+
+   /* ============ ACCOUNT TAB: password show/hide ============ */
+.set-password-field{ position:relative; }
+.set-password-field input{ padding-right:42px; }
+.set-password-toggle{
+  position:absolute; top:50%; right:6px; transform:translateY(-50%);
+  width:30px; height:30px; border:none; background:transparent; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text); border-radius:8px; cursor:pointer;
+}
+.set-password-toggle:hover{ background:var(--bg); }
+.set-password-toggle svg{ width:17px; height:17px; }
+.set-password-toggle .eye-hide{ display:none; }
+.set-password-toggle.is-visible .eye-show{ display:none; }
+.set-password-toggle.is-visible .eye-hide{ display:block; }

@@ -10,6 +10,7 @@ Route map (all under /admin/settings):
     GET  ""                    full page (tabs + form, one Save button)
     POST ""                    save -> re-renders the form fragment with
                                 either field errors or a success toast
+    POST /account              update login email / password
     POST /upload-logo          image upload -> preview fragment (used
     POST /upload-favicon       inside the form; each renders a small
     POST /upload-hero-image    inline preview + an out-of-band swap of
@@ -24,9 +25,10 @@ from sqlalchemy.orm import Session
 
 from app.database.session import get_db
 from app.schemas.settings import SettingsUpdate
-from app.services import settings_service
+from app.services import auth_service, settings_service
+from app.core.security import hash_password, verify_password
 from app.utils.file_upload import FAVICON_EXTENSIONS, IMAGE_EXTENSIONS, save_upload
-from app.web.deps import require_login, templates, toast_only
+from app.web.deps import get_logged_in_admin_id, require_login, templates, toast_only
 
 router = APIRouter(prefix="/admin/settings", tags=["Admin · Settings"], dependencies=[Depends(require_login)])
 
@@ -202,6 +204,35 @@ async def _build_payload_or_errors(request: Request):
 
 
 # ======================================================================
+# shared render helper (settings tabs + Account tab)
+# ======================================================================
+
+def _render_settings_form(
+    request: Request, db: Session, *,
+    errors=None, form_values=None, account_errors=None, account_values=None,
+    headers=None,
+) -> HTMLResponse:
+    """Every branch of settings_save / settings_account_save re-renders the
+    same full form fragment (site-settings tabs + the Account tab). This
+    centralizes fetching the current admin (needed by the Account tab's
+    email field) so each branch only needs to pass whichever errors are
+    relevant to it."""
+    row = settings_service.get_or_create(db)
+    admin_id = get_logged_in_admin_id(request)
+    admin = auth_service.get_admin_by_id(db, admin_id) if admin_id else None
+    context = {
+        "request": request,
+        "s": settings_service.to_read(row),
+        "errors": errors or {},
+        "form_values": form_values,
+        "admin": admin,
+        "account_errors": account_errors or {},
+        "account_values": account_values,
+    }
+    return templates.TemplateResponse("admin/partials/settings_form.html", context, headers=headers)
+
+
+# ======================================================================
 # full page
 # ======================================================================
 
@@ -209,9 +240,15 @@ async def _build_payload_or_errors(request: Request):
 def settings_page(request: Request, db: Session = Depends(get_db)):
     row = settings_service.get_or_create(db)
     data = settings_service.to_read(row)
+    admin_id = get_logged_in_admin_id(request)
+    admin = auth_service.get_admin_by_id(db, admin_id) if admin_id else None
     return templates.TemplateResponse(
         "admin/settings.html",
-        {"request": request, "active_page": "settings", "s": data, "errors": {}, "form_values": None},
+        {
+            "request": request, "active_page": "settings", "s": data,
+            "errors": {}, "form_values": None,
+            "admin": admin, "account_errors": {}, "account_values": None,
+        },
     )
 
 
@@ -223,52 +260,86 @@ def settings_page(request: Request, db: Session = Depends(get_db)):
 async def settings_save(request: Request, db: Session = Depends(get_db)):
     payload, errors, form_values = await _build_payload_or_errors(request)
     if errors:
-        row = settings_service.get_or_create(db)
-        return templates.TemplateResponse(
-            "admin/partials/settings_form.html",
-            {"request": request, "s": settings_service.to_read(row), "errors": errors, "form_values": form_values},
-        )
+        return _render_settings_form(request, db, errors=errors, form_values=form_values)
 
     try:
         settings_service.update_settings(db, payload)
     except HTTPException as exc:
         db.rollback()
-        row = settings_service.get_or_create(db)
-        return templates.TemplateResponse(
-            "admin/partials/settings_form.html",
-            {
-                "request": request, "s": settings_service.to_read(row),
-                "errors": {_error_field(exc.detail): exc.detail}, "form_values": form_values,
-            },
+        return _render_settings_form(
+            request, db, errors={_error_field(exc.detail): exc.detail}, form_values=form_values,
         )
     except SQLAlchemyError:
         db.rollback()
-        row = settings_service.get_or_create(db)
-        return templates.TemplateResponse(
-            "admin/partials/settings_form.html",
-            {
-                "request": request, "s": settings_service.to_read(row),
-                "errors": {"websiteName": "We couldn't save settings right now. Please try again."},
-                "form_values": form_values,
-            },
+        return _render_settings_form(
+            request, db,
+            errors={"websiteName": "We couldn't save settings right now. Please try again."},
+            form_values=form_values,
         )
     except Exception:  # anything unexpected — never let a raw error/traceback reach the user
         db.rollback()
-        row = settings_service.get_or_create(db)
-        return templates.TemplateResponse(
-            "admin/partials/settings_form.html",
-            {
-                "request": request, "s": settings_service.to_read(row),
-                "errors": {"websiteName": "Something went wrong while saving settings. Please try again."},
-                "form_values": form_values,
-            },
+        return _render_settings_form(
+            request, db,
+            errors={"websiteName": "Something went wrong while saving settings. Please try again."},
+            form_values=form_values,
         )
 
-    row = settings_service.get_or_create(db)
-    return templates.TemplateResponse(
-        "admin/partials/settings_form.html",
-        {"request": request, "s": settings_service.to_read(row), "errors": {}, "form_values": None},
-        headers=toast_only("Settings saved successfully", toast_id="settingsToast"),
+    return _render_settings_form(
+        request, db, headers=toast_only("Settings saved successfully", toast_id="settingsToast"),
+    )
+
+
+# ======================================================================
+# account (email / password)
+# ======================================================================
+
+@router.post("/account", response_class=HTMLResponse)
+async def settings_account_save(request: Request, db: Session = Depends(get_db)):
+    admin_id = get_logged_in_admin_id(request)
+    admin = auth_service.get_admin_by_id(db, admin_id) if admin_id else None
+    if not admin:
+        return _render_settings_form(request, db, account_errors={"currentPassword": "Your session expired — please log in again."})
+
+    form = await request.form()
+    current_password = form.get("currentPassword") or ""
+    new_email = (form.get("newEmail") or "").strip().lower()
+    new_password = form.get("newPassword") or ""
+    confirm_password = form.get("confirmPassword") or ""
+
+    errors: dict = {}
+
+    if not current_password:
+        errors["currentPassword"] = "Enter your current password to make changes"
+    elif not verify_password(current_password, admin.password_hash):
+        errors["currentPassword"] = "Current password is incorrect"
+
+    if not new_email:
+        errors["newEmail"] = "Email is required"
+    elif new_email != admin.email:
+        existing = auth_service.get_admin_by_email(db, new_email)
+        if existing and existing.id != admin.id:
+            errors["newEmail"] = "This email is already in use"
+
+    wants_password_change = bool(new_password or confirm_password)
+    if wants_password_change:
+        if len(new_password) < 8:
+            errors["newPassword"] = "Password must be at least 8 characters"
+        elif new_password != confirm_password:
+            errors["confirmPassword"] = "Passwords do not match"
+
+    if errors:
+        return _render_settings_form(
+            request, db, account_errors=errors, account_values={"newEmail": new_email},
+        )
+
+    admin.email = new_email
+    if wants_password_change:
+        admin.password_hash = hash_password(new_password)
+    db.commit()
+    db.refresh(admin)
+
+    return _render_settings_form(
+        request, db, headers=toast_only("Account updated successfully", toast_id="settingsToast"),
     )
 
 
