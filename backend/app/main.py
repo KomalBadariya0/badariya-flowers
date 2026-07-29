@@ -135,7 +135,6 @@ app.include_router(site.router)
 # /assets  -> project-root/assets   (shared site design tokens, images,
 #             fonts — used by both the customer site and every admin page)
 # /admin   -> project-root/admin    (admin-only assets: admin.css,
-#             admin.js, dashboard.css, etc. — the actual /admin/* pages
 #             are real routes registered above, not files in this folder)
 # The customer-facing HTML pages themselves (index.html, category.html,
 # product.html, catalogue.html, cart.html, about.html, contact.html) are
@@ -148,9 +147,10 @@ app.mount(
     StaticFiles(directory=str(settings.frontend_root / "assets")),
     name="site-assets",
 )
+
 app.mount(
-    "/admin",
-    StaticFiles(directory=str(settings.frontend_root / "admin")),
+    "/admin/assets",
+    StaticFiles(directory=str(settings.frontend_root / "admin" / "assets")),
     name="admin-assets",
 )
 

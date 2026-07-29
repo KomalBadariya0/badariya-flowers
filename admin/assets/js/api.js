@@ -21,7 +21,7 @@ const API_BASE =
   window.location.hostname === "127.0.0.1" ||
   window.location.hostname === "localhost"
     ? "http://127.0.0.1:8000/api"
-    : "https://badariya-flowers.onrender.com/api";
+    : "/api";
 
 const API_ORIGIN = API_BASE.replace(/\/api\/?$/, "");
 

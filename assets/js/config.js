@@ -29,6 +29,7 @@ const SITE = {
   tagline: "Handcrafted Artificial Flowers For Every Celebration",
   whatsappNumber: "",
   logo: "/assets/images/logo/logo.png",
+  favicon: "/assets/images/logo/logo.png",
   phone: "+91 96678 57709",
   email: "info@badariyaflowers.com",
   address: "",
@@ -54,6 +55,7 @@ const SITE_READY = (async function loadSiteSettings(){
       tagline: s.tagline || SITE.tagline,
       whatsappNumber: s.whatsappNumber || SITE.whatsappNumber,
       logo: mediaUrl(s.logo) || SITE.logo,
+      favicon: mediaUrl(s.favicon) || SITE.favicon,
       phone: s.mobileNumber || SITE.phone,
       email: s.businessEmail || SITE.email,
       address: [s.address, s.city, s.state, s.country, s.pincode].filter(Boolean).join(", "),
@@ -69,6 +71,12 @@ const SITE_READY = (async function loadSiteSettings(){
       twitter: s.twitter || SITE.twitter,
       pinterest: s.pinterest || SITE.pinterest
     });
+    let iconLink = document.querySelector("link[rel~='icon']");
+      iconLink = document.createElement("link");
+      iconLink.rel = "icon";
+      document.head.appendChild(iconLink);
+    }
+    iconLink.href = SITE.favicon;
   }catch(err){
     console.error("Could not load site settings from the backend, using defaults:", err.message);
   }
