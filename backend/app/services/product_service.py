@@ -81,7 +81,7 @@ def list_products(
         query = query.filter(Product.active == (status_filter == "active"))
     if featured is not None:
         query = query.filter(Product.featured == featured)
-    query = query.order_by(Product.created_at.desc())
+    query = query.order_by(Product.sub_category_id.asc(), Product.no.asc())
     total = query.count()
     if limit:
         query = query.limit(limit)
@@ -128,14 +128,16 @@ def _assert_sub_category_exists(db: Session, sub_category_id: int) -> SubCategor
     return sub
 
 
-def _assert_sku_unique(db: Session, sku: Optional[str], exclude_id: Optional[int] = None) -> None:
+def _assert_sku_unique(db: Session, sku: Optional[str], sub_category_id: Optional[int] = None, exclude_id: Optional[int] = None) -> None:
     if not sku:
         return
     query = db.query(Product).filter(func.lower(Product.sku) == sku.lower())
+    if sub_category_id is not None:
+        query = query.filter(Product.sub_category_id == sub_category_id)
     if exclude_id is not None:
         query = query.filter(Product.id != exclude_id)
     if query.first():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="A product with this SKU already exists")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="A product with this SKU already exists in this sub-category")
 
 
 def _friendly_integrity_message(error: IntegrityError) -> str:
@@ -165,7 +167,7 @@ def _sync_images(db: Session, product: Product, urls: List[str]) -> None:
 
 def create_product(db: Session, payload: ProductCreate) -> Product:
     _assert_sub_category_exists(db, payload.subCategoryId)
-    _assert_sku_unique(db, payload.sku)
+    _assert_sku_unique(db, payload.sku, sub_category_id=payload.subCategoryId)
 
     seo = payload.seo or None
     product = Product(
@@ -218,7 +220,7 @@ def create_product(db: Session, payload: ProductCreate) -> Product:
 def update_product(db: Session, product_id: int, payload: ProductUpdate) -> Product:
     product = get_product(db, product_id)
     _assert_sub_category_exists(db, payload.subCategoryId)
-    _assert_sku_unique(db, payload.sku, exclude_id=product_id)
+    _assert_sku_unique(db, payload.sku, sub_category_id=payload.subCategoryId, exclude_id=product_id)
 
     seo = payload.seo or None
     product.category_id = payload.categoryId

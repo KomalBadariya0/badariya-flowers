@@ -72,6 +72,7 @@ const SITE_READY = (async function loadSiteSettings(){
       pinterest: s.pinterest || SITE.pinterest
     });
     let iconLink = document.querySelector("link[rel~='icon']");
+    if (!iconLink) {
       iconLink = document.createElement("link");
       iconLink.rel = "icon";
       document.head.appendChild(iconLink);

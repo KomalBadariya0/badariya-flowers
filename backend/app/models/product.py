@@ -16,7 +16,7 @@ class Product(Base):
 
     no = Column(Integer, nullable=False)  # article/display number within its sub category
     name = Column(String(200), nullable=False)
-    sku = Column(String(100), nullable=True, unique=True, index=True)
+    sku = Column(String(100), nullable=True, index=True)  # unique per sub-category, enforced by composite DB index
 
     price = Column(Float, nullable=True)          # null = ask on WhatsApp / see price_note
     price_note = Column(String(255), nullable=True)
